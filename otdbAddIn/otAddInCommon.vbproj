@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E5C80542-6D68-4520-8C16-BB033AF5C470}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>OnTrack.AddIn</RootNamespace>
+    <AssemblyName>otdbAddIn</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>Windows</MyType>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>otdbAddIn.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>otdbAddIn.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Telerik.WinControls, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.GridView, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.TelerikMetroBlue, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.UI, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TelerikCommon, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="modDoc9QuickNDirty.vb">
+      <CustomToolNamespace>OnTrack.Addin</CustomToolNamespace>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="UIAboutBox.Designer.vb">
+      <DependentUpon>UIAboutBox.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIAboutBox.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIFormBatchProcesses.Designer.vb">
+      <DependentUpon>UIFormBatchProcesses.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormBatchProcesses.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIFormLogin.Designer.vb">
+      <DependentUpon>UIFormLogin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormLogin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIFormMessageLog.designer.vb">
+      <DependentUpon>UIFormMessageLog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormMessageLog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIFormSetting.designer.vb">
+      <DependentUpon>UIFormSetting.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormSetting.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIFormWorkXConfig.designer.vb">
+      <DependentUpon>UIFormWorkXConfig.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormWorkXConfig.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIMessageBox.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIAboutBox.resx">
+      <DependentUpon>UIAboutBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIFormBatchProcesses.resx">
+      <DependentUpon>UIFormBatchProcesses.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIFormLogin.resx">
+      <DependentUpon>UIFormLogin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIFormMessageLog.resx">
+      <DependentUpon>UIFormMessageLog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIFormSetting.resx">
+      <DependentUpon>UIFormSetting.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIFormWorkXConfig.resx">
+      <DependentUpon>UIFormWorkXConfig.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\otdbBackEnd\otdbBackEnd\otdbBackEnd.vbproj">
+      <Project>{1d7701a8-4d3f-4fcb-875e-9feaaeb05732}</Project>
+      <Name>otdbBackEnd</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\box.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Actions-configure-toolbars-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\excel-replication_full_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\excel-replication-inbound_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\excel-replication-outbound_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\excel-replication-outbound.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\excel-replication.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\options.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt_play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\files.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MessageQueueTube.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MarketSectorIcons_01_Red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fasttrack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt_apply.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OnTrackLarge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\railway_tracks_icon.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\connect-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disconnect-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt_add1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Actions-system-run-icon32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Actions-system-run-icon-64x64.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Actions-system-run-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\setting_config.jpg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="7389b3b2-f8ff-4a94-8f50-0daa8cf26623" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
