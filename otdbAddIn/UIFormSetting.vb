@@ -96,7 +96,7 @@ Public Class UIFormSetting
         Private _path As String = ""
         Private _dbuser As String = ""
         Private _dbpassword As String = ""
-        Private _sequence As ConfigSequence = ConfigSequence.primary
+        Private _sequence As ComplexPropertyStore.Sequence = ComplexPropertyStore.Sequence.primary
         Private _description As String = ""
         Private _driver As Database.otDbDriverType = 0
         Private _ConnectionString As String = ""
@@ -179,8 +179,8 @@ Public Class UIFormSetting
         <DisplayName("Config Set Sequence")> _
         <Category("Database")> <Browsable(True)> _
         <Description("sequence of the configuration")> _
-        Public Property ConfigSequence As ConfigSequence
-            Set(value As ConfigSequence)
+        Public Property Sequence As ComplexPropertyStore.Sequence
+            Set(value As ComplexPropertyStore.Sequence)
                 _sequence = value
             End Set
             Get
@@ -408,6 +408,9 @@ Public Class UIFormSetting
             myStore = store
         End If
 
+        '** reread
+        ot.RetrieveConfigProperties(force:=False)
+        '** check
         Dim currentconfig As PropertyStoreItem = myStore.Item(constConfigurationName)
         If currentconfig Is Nothing Then
             currentconfig = New PropertyStoreItem(GetType(String), constConfigurationName, ot.CurrentConfigSetName)
@@ -474,9 +477,9 @@ Public Class UIFormSetting
             '    Dim aName As String = aValue.Split(ConstDelimiter).ElementAt(1)
             '    If Not ot.ConfigSetNames.Contains(aName) Then
             '        myStore.Remove(aName)
-            '    ElseIf Not ot.HasConfigSetProperty(ConstCPNDBType, configsetname:=aName, sequence:=ConfigSequence.primary) Then
+            '    ElseIf Not ot.HasConfigSetProperty(ConstCPNDBType, configsetname:=aName, sequence:=ComplexPropertyStore.Sequence.primary) Then
             '        myStore.Remove(aName)
-            '    ElseIf Not ot.HasConfigSetProperty(ConstCPNDBType, configsetname:=aName, sequence:=ConfigSequence.secondary) Then
+            '    ElseIf Not ot.HasConfigSetProperty(ConstCPNDBType, configsetname:=aName, sequence:=ComplexPropertyStore.Sequence.secondary) Then
             '        myStore.Remove(aName)
             '    End If
             'End If
@@ -484,14 +487,13 @@ Public Class UIFormSetting
 
         '*** add configsets
         Dim i As UShort = 1
-        For Each aConfigSetName In ot.ConfigSetNames
-
-            If aConfigSetName <> ConstGlobalConfigSetName Then
-                For Each aSequence As ConfigSequence In [Enum].GetValues(GetType(ConfigSequence))
+        For Each aConfigSetName In ot.ConfigSetNamesToSelect
+            For Each aSequence As ComplexPropertyStore.Sequence In [Enum].GetValues(GetType(ComplexPropertyStore.Sequence))
+                If ot.HasConfigSetName(configsetname:=aConfigSetName, sequence:=aSequence) Then
                     Dim aConfigSetModel As New ConfigSetModel
                     With aConfigSetModel
                         .ConfigSetname = aConfigSetName
-                        .ConfigSequence = aSequence
+                        .Sequence = aSequence
                         .DatabaseType = GetConfigProperty(ConstCPNDBType, configsetname:=aConfigSetName, sequence:=aSequence)
                         .DbUser = GetConfigProperty(ConstCPNDBUser, configsetname:=aConfigSetName, sequence:=aSequence)
                         .DbUserPassword = GetConfigProperty(ConstCPNDBPassword, configsetname:=aConfigSetName, sequence:=aSequence)
@@ -522,14 +524,12 @@ Public Class UIFormSetting
                     configset.Description = GetConfigProperty(ConstCPNDescription, configsetname:=aConfigSetName)
                     configset.Label = "DB Configuration #" & i & ":" & aSequence.ToString
 
-                Next
 
-                i += 1
 
-            End If
+                End If
+            Next
+            i += 1 ' next configuration (primary & secondary belong together)
         Next
-
-
 
         Return myStore
     End Function
@@ -576,8 +576,8 @@ Public Class UIFormSetting
 
     Private Sub ButtonCreateSchema_Click(sender As Object, e As EventArgs) Handles ButtonCreateSchema.Click
 
-        If CurrentSession.RequireAccessRight(otAccessRight.AlterSchema) Then
-            Global.OnTrack.Database.createDatabase.Run()
+        If CurrentSession.RequireAccessRight(otAccessRight.AlterSchema, installIfnecessary:=True) Then
+            Global.OnTrack.Database.createDatabase.Run(ot.InstalledModules)
         Else
             ot.CoreMessageHandler(message:="couldn't acquire the necessary rights to continue this operation", _
                                          messagetype:=otCoreMessageType.ApplicationError, subname:="UIFormSetting.CreateSchemaButton")
@@ -611,13 +611,13 @@ Public Class UIFormSetting
                 ot.CoreMessageHandler(message:="Current database configuration changed to " & CStr(configsetname.Value), _
                                       messagetype:=otCoreMessageType.ApplicationInfo, subname:="UIFormSetting.SaveInDocument")
             End If
-            
+
             Dim description As PropertyStoreItem = _propertyStore.Item(constConfigDescription)
             If description IsNot Nothing Then
                 SetConfigProperty(ot.ConstCPNDescription, weight:=50, value:=description.Value)
                 SetHostPropertyDelegate(name:=ot.ConstCPNDescription, value:=description.Value, host:=Nothing, silent:=False)
             End If
-  
+
             Dim configfilename As PropertyStoreItem = _propertyStore.Item(ConstCPNConfigFileName)
             If configfilename IsNot Nothing Then
                 SetConfigProperty(ot.ConstCPNConfigFileName, weight:=50, value:=configfilename.Value)
@@ -629,7 +629,7 @@ Public Class UIFormSetting
                 ot.AddConfigFilePath(configfilelocation.Value)
                 SetHostPropertyDelegate(name:=ot.ConstCPNConfigFileLocation, value:=configfilelocation.Value, host:=Nothing, silent:=False)
             End If
-            
+
             For Each aProperty In _propertyStore
                 Dim aValue As String = aProperty.PropertyName
 
@@ -639,60 +639,61 @@ Public Class UIFormSetting
                         Dim aConfigSetModel As ConfigSetModel = TryCast(aProperty.Value, ConfigSetModel)
                         If aConfigSetModel IsNot Nothing _
                         AndAlso aConfigSetModel.ConfigSetname = configsetname.Value.ToString _
-                        And aConfigSetModel.ConfigSequence = ConfigSequence.primary Then
+                        And aConfigSetModel.Sequence = ComplexPropertyStore.Sequence.Primary Then
                             With aConfigSetModel
                                 If .Database <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBName, value:=.Database, host:=Nothing, silent:=False)
-                                    SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .DBPath <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBPath, value:=.DBPath, host:=Nothing, silent:=False)
-                                    SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .DatabaseType <> 0 Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBType, value:=.DatabaseType, host:=Nothing, silent:=False)
-                                    SetConfigProperty(ConstCPNDBType, weight:=50, value:=.DatabaseType, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(ConstCPNDBType, weight:=50, value:=.DatabaseType, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .DbUser <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBUser, value:=.DbUser, host:=Nothing, silent:=False)
-                                    SetConfigProperty(ConstCPNDBUser, weight:=50, value:=.DbUser, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(ConstCPNDBUser, weight:=50, value:=.DbUser, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .DbUserPassword <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBPassword, value:=.DbUserPassword, host:=Nothing, silent:=False)
-                                    SetConfigProperty(ConstCPNDBPassword, weight:=50, value:=.DbUserPassword, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(ConstCPNDBPassword, weight:=50, value:=.DbUserPassword, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .ConfigSetNDescription <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDescription, value:=.ConfigSetNDescription, host:=Nothing, silent:=False)
-                                    SetConfigProperty(name:=ConstCPNDescription, weight:=50, value:=.ConfigSetNDescription, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(name:=ConstCPNDescription, weight:=50, value:=.ConfigSetNDescription, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .DatabaseDriver <> 0 Then
                                     SetHostPropertyDelegate(name:=ConstCPNDriverName, value:=.DatabaseDriver, host:=Nothing, silent:=False)
-                                    SetConfigProperty(name:=ConstCPNDriverName, weight:=50, value:=.DatabaseDriver, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(name:=ConstCPNDriverName, weight:=50, value:=.DatabaseDriver, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 If .ConnectionString <> "" Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBConnection, value:=.ConnectionString, host:=Nothing, silent:=False)
-                                    SetConfigProperty(name:=ConstCPNDBConnection, weight:=50, value:=.ConnectionString, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                    SetConfigProperty(name:=ConstCPNDBConnection, weight:=50, value:=.ConnectionString, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
                                 SetHostPropertyDelegate(name:=constCPNUseLogAgent, value:=.Logagent, host:=Nothing, silent:=False)
-                                SetConfigProperty(name:=constCPNUseLogAgent, weight:=50, value:=.Logagent, configsetname:=configsetname.Value.ToString, sequence:=ConfigSequence.primary)
+                                SetConfigProperty(name:=constCPNUseLogAgent, weight:=50, value:=.Logagent, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
 
                             End With
                         End If
                     End If
                 End If
             Next
-            
+
 
             ot.CoreMessageHandler(message:="OnTrack configuration properties saved in document properties", messagetype:=otCoreMessageType.ApplicationInfo, _
                                    subname:="UIFormSetting.saveInDocument")
+            isChanged = False
             Me.Refresh()
             Me.Hide()
         Catch ex As Exception
@@ -718,7 +719,6 @@ Public Class UIFormSetting
 
             '** change the config set name
             Dim configsetname As PropertyStoreItem = _propertyStore.Item(constConfigurationName)
-            ot.CurrentConfigSetName = configsetname.Value.ToString
             If configsetname IsNot Nothing AndAlso configsetname.Value IsNot Nothing AndAlso LCase(CStr(configsetname.Value)) <> LCase(ot.CurrentConfigSetName) Then
                 ot.CurrentConfigSetName = configsetname.Value
                 ot.CoreMessageHandler(message:="Current database configuration changed to " & CStr(configsetname.Value), _
@@ -727,14 +727,15 @@ Public Class UIFormSetting
 
             Dim description As PropertyStoreItem = _propertyStore.Item(constConfigDescription)
             If description IsNot Nothing Then SetConfigProperty(ot.ConstCPNDescription, weight:=50, value:=description.Value)
-            
+
             Dim configfilename As PropertyStoreItem = _propertyStore.Item(ConstCPNConfigFileName)
             If configfilename IsNot Nothing Then ot.CurrentConfigFileName = configfilename.Value
 
             Dim configfilelocation As PropertyStoreItem = _propertyStore.Item(constConfigFileLocation)
             If configfilelocation IsNot Nothing Then ot.AddConfigFilePath(configfilelocation.Value)
 
-            Dim aSequence As ConfigSequence
+            '** set the current configuration set
+            Dim aSequence As ComplexPropertyStore.Sequence
             For Each aProperty In _propertyStore
                 Dim aValue As String = aProperty.PropertyName
                 If aValue.Split(ConstDelimiter).Length >= 2 Then
@@ -743,7 +744,7 @@ Public Class UIFormSetting
                         Dim aConfigSetModel As ConfigSetModel = TryCast(aProperty.Value, ConfigSetModel)
                         If aConfigSetModel IsNot Nothing _
                             AndAlso aConfigSetModel.ConfigSetname = configsetname.Value.ToString Then
-                            aSequence = aConfigSetModel.ConfigSequence
+                            aSequence = aConfigSetModel.Sequence
                             With aConfigSetModel
                                 If .Database <> "" Then SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                                 If .DBPath <> "" Then SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
@@ -756,7 +757,7 @@ Public Class UIFormSetting
                                 SetConfigProperty(name:=constCPNUseLogAgent, weight:=50, value:=.Logagent, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                             End With
                         End If
-                        
+
                     End If
                 End If
             Next
@@ -764,6 +765,7 @@ Public Class UIFormSetting
 
             ot.CoreMessageHandler(message:="OnTrack configuration properties saved in session", messagetype:=otCoreMessageType.ApplicationInfo, _
                                    subname:="UIFormSetting.SaveInSession")
+            isChanged = False
             Me.Refresh()
             Me.Close()
         Catch ex As Exception
@@ -790,13 +792,5 @@ Public Class UIFormSetting
         ' Add any initialization after the InitializeComponent() call.
         _propertyStore = Me.UpdatePropertyStore()
     End Sub
-    ''' <summary>
-    ''' handles the save Button Click Event
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub SaveButton_Click_1(sender As Object, e As EventArgs) Handles SaveButton.Click
-
-    End Sub
+  
 End Class

@@ -46,7 +46,7 @@ Public Module Doc9QuickNDirty
             End If
             '* create x config
             If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc18MSPConfigNameDynamic) Then
-                aXChangeConfig.LoadBy(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+                aXChangeConfig.Inject(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
                 aXChangeConfig.Delete()
 
             End If
@@ -56,7 +56,7 @@ Public Module Doc9QuickNDirty
             aXChangeConfig.AddObjectByName(Scheduling.Schedule.ConstTableID, xcmd:=XCMD)
             aXChangeConfig.AddObjectByName(Deliverables.Target.constTableID, xcmd:=XCMD)
             aXChangeConfig.AddObjectByName(Deliverables.Track.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Parts.clsOTDBPart.constTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Parts.Part.constTableID, xcmd:=XCMD)
 
             '* Add Attribute Mapping
             aXChangeConfig.AllowDynamicAttributes = True
@@ -65,7 +65,7 @@ Public Module Doc9QuickNDirty
             ''''' Create the OUTLINE FOR IT
             Dim anOutline As New XOutline
             If Not anOutline.Create(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic) Then
-                anOutline.LoadBy(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+                anOutline.Inject(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
                 anOutline.Delete()
             End If
             anOutline.DynamicAddRevisions = True
@@ -81,28 +81,27 @@ Public Module Doc9QuickNDirty
             If Not aCommand.Prepared Then
                 aCommand.select = Deliverable.ConstTableID & ".[" & Deliverable.constFNUid & "] ," & _
                                   Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] ," & _
-                                  Parts.clsOTDBPart.constTableID & ".[" & clsOTDBPart.constFNdept & "] ," & _
-                                   Parts.clsOTDBPart.constTableID & ".[" & clsOTDBPart.constFNWkPk & "] "
-                aCommand.AddTable(tableid:=clsOTDBPart.constTableID, addAllFields:=False)
-                aCommand.AddTable(tableid:=clsOTDBTrackItem.constTableID, addAllFields:=False)
+                                  Parts.Part.constTableID & ".[" & Part.constFNRespOU & "] ," & _
+                                   Parts.Part.constTableID & ".[" & Part.ConstFNWorkpackage & "] "
+                aCommand.AddTable(tableid:=Part.constTableID, addAllFields:=False)
+                aCommand.AddTable(tableid:=TrackItem.constTableID, addAllFields:=False)
                 '" inner join " & clsOTDBTrackItem.constTableID & " on " & _
                 aCommand.Where = _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] = " & clsOTDBTrackItem.constTableID & ".[" & clsOTDBTrackItem.constFNPrecode & "]" & _
+                    Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] = " & TrackItem.constTableID & ".[" & TrackItem.constFNMatchCode & "]" & _
                      " AND " & _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNPartID & "] = " & clsOTDBPart.constTableID & ".[" & clsOTDBPart.constFNPartID & "]"
+                    Deliverable.ConstTableID & ".[" & Deliverable.constFNPartID & "] = " & Part.constTableID & ".[" & Part.constFNPartID & "]"
 
                 aCommand.Where &= " AND " & Deliverable.ConstTableID & ".[" & Deliverable.ConstFNIsDeleted & "]=@IsDeleted and lcase(" & _
                     Deliverable.ConstTableID & ".[" & Deliverable.constFNTypeID & "]) <> 'struktur' and " _
                     & Deliverable.ConstTableID & ".[" & Deliverable.constFNfuid & "] = 0"  ' no revision
 
                 aCommand.AddParameter(New Database.ormSqlCommandParameter(ID:="@IsDeleted", _
-                                                                                fieldname:=Deliverable.ConstFNIsDeleted, _
+                                                                                columnname:=Deliverable.ConstFNIsDeleted, _
                                                                                 tablename:=Deliverable.ConstTableID))
 
-                aCommand.OrderBy = "[" & clsOTDBTrackItem.constTableID & "." & clsOTDBTrackItem.constFNOrder & "] asc ," & _
-                                   "[" & clsOTDBPart.constTableID & "." & clsOTDBPart.constFNdept & "] asc, " & _
-                                   "[" & clsOTDBPart.constTableID & "." & clsOTDBPart.constFNSite & "] asc, " & _
-                                   "[" & clsOTDBPart.constTableID & "." & clsOTDBPart.constFNWkPk & "] asc " & _
+                aCommand.OrderBy = "[" & TrackItem.constTableID & "." & TrackItem.constFNOrdinal & "] asc ," & _
+                                   "[" & Part.constTableID & "." & Part.constFNRespOU & "] asc, " & _
+                                   "[" & Part.constTableID & "." & Part.ConstFNWorkpackage & "] asc " & _
                                    ""
                 aCommand.Prepare()
             End If
@@ -212,7 +211,7 @@ Public Module Doc9QuickNDirty
             End If
             '* create x config
             If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc18ERoadConfigNameDynamic) Then
-                aXChangeConfig.LoadBy(MySettings.Default.DefaultDoc18ERoadConfigNameDynamic)
+                aXChangeConfig.Inject(MySettings.Default.DefaultDoc18ERoadConfigNameDynamic)
                 aXChangeConfig.Delete()
 
             End If
@@ -222,7 +221,7 @@ Public Module Doc9QuickNDirty
             aXChangeConfig.AddObjectByName(Scheduling.Schedule.ConstTableID, xcmd:=XCMD)
             aXChangeConfig.AddObjectByName(Deliverables.Target.constTableID, xcmd:=XCMD)
             aXChangeConfig.AddObjectByName(Deliverables.Track.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Parts.clsOTDBPart.constTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Parts.Part.constTableID, xcmd:=XCMD)
 
             '* Add Attribute Mapping
             aXChangeConfig.AllowDynamicAttributes = True
@@ -253,7 +252,7 @@ Public Module Doc9QuickNDirty
         Dim aXChangeConfig As New clsOTDBXChangeConfig
 
         If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc9ConfigNameDynamic) Then
-            aXChangeConfig.LoadBy(MySettings.Default.DefaultDoc9ConfigNameDynamic)
+            aXChangeConfig.Inject(MySettings.Default.DefaultDoc9ConfigNameDynamic)
             aXChangeConfig.Delete()
 
         End If
@@ -283,7 +282,7 @@ Public Module Doc9QuickNDirty
         Dim aXChangeConfig As New clsOTDBXChangeConfig
 
         If Not aXChangeConfig.Create(MySettings.Default.DefaultExpediterConfigNameDynamic) Then
-            aXChangeConfig.LoadBy(MySettings.Default.DefaultExpediterConfigNameDynamic)
+            aXChangeConfig.Inject(MySettings.Default.DefaultExpediterConfigNameDynamic)
             aXChangeConfig.Delete()
 
         End If

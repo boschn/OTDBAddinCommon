@@ -166,8 +166,8 @@ Public Class UIFormLogin
         Get
             Return CBConfigSet.Text
         End Get
-        Set
-            CBConfigSet.Text = Value
+        Set(value As String)
+            CbConfigSet.Text = value
         End Set
     End Property
 
@@ -252,8 +252,12 @@ Public Class UIFormLogin
         If myshadow Is Nothing Then
         Else
             Me.ConfigSetEnabled = myshadow.EnableConfigSet
+
             Me.ConfigSetList = myshadow.PossibleConfigSets
             Me.ConfigSet = myshadow.Configset
+            '** add handler here otherwise while adding the possible configs also the configset in myshadow will be set anew
+            AddHandler CbConfigSet.SelectedIndexChanged, AddressOf Me.CbConfigSet_SelectedIndexChanged
+
             Me.CbConfigSet.AutoCompleteDataSource = myshadow.PossibleConfigSets
             Me.CbConfigSet.AutoCompleteMode = Windows.Forms.AutoCompleteMode.Append
 
@@ -290,8 +294,13 @@ Public Class UIFormLogin
         End If
 
     End Sub
-
-    Private Sub CbConfigSet_SelectedIndexChanged(sender As Object, e As Telerik.WinControls.UI.Data.PositionChangedEventArgs) Handles CbConfigSet.SelectedIndexChanged
+    ''' <summary>
+    ''' handler for the change in the configset
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub CbConfigSet_SelectedIndexChanged(sender As Object, e As Telerik.WinControls.UI.Data.PositionChangedEventArgs)
         Dim aList As List(Of String) = CbConfigSet.DataSource
         If e.Position >= 0 And e.Position < aList.Count Then
             myshadow.Configset = aList.Item(e.Position)

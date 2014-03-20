@@ -11,7 +11,7 @@ Public Class UIFormMessageLog
     Private WithEvents _messageLog As New System.Data.DataTable("messageLog")
     Private WithEvents _mydataset As New System.Data.DataSet
     Private WithEvents _session As Session
-    Private WithEvents _otdblog As ErrorLog
+    Private WithEvents _otdblog As MessageLog
     Public Sub New()
 
         ' This call is required by the designer.
@@ -67,9 +67,9 @@ Public Class UIFormMessageLog
             _otdblog = _session.Errorlog
             _messageLog.Clear()
             '** initial fill
-            For Each [error] As CoreError In _otdblog
+            For Each [error] As SessionLogMessage In _otdblog
                 With [error]
-                    _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .EntryName)
+                    _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .Columnname)
                 End With
             Next
         End Set
@@ -79,16 +79,16 @@ Public Class UIFormMessageLog
         _otdblog = _session.Errorlog
         _messageLog.Clear()
         '** initial fill
-        For Each [error] As CoreError In _otdblog
+        For Each [error] As SessionLogMessage In _otdblog
             With [error]
-                _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .EntryName)
+                _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .Columnname)
             End With
         Next
     End Sub
 
     Private Sub AddErrorEvent(sender As Object, e As otErrorEventArgs) Handles _otdblog.onErrorRaised
         With e.Error
-            _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .EntryName)
+            _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .Columnname)
         End With
     End Sub
 
@@ -109,9 +109,9 @@ Public Class UIFormMessageLog
             _otdblog = ot.Errorlog
             _messageLog.Clear()
             '** initial fill
-            For Each [error] As CoreError In _otdblog
+            For Each [error] As SessionLogMessage In _otdblog
                 With [error]
-                    _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .EntryName)
+                    _messageLog.Rows.Add(.Entryno, .messagetype, .Message, .Timestamp, .Arguments, .Subname, .Tablename, .Columnname)
                 End With
             Next
         End If
