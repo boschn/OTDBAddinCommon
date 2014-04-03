@@ -576,7 +576,7 @@ Public Class UIFormSetting
 
     Private Sub ButtonCreateSchema_Click(sender As Object, e As EventArgs) Handles ButtonCreateSchema.Click
 
-        If CurrentSession.RequireAccessRight(otAccessRight.AlterSchema, installIfnecessary:=True) Then
+        If ot.RequireAccess(otAccessRight.AlterSchema) Then
             Global.OnTrack.Database.createDatabase.Run(ot.InstalledModules)
         Else
             ot.CoreMessageHandler(message:="couldn't acquire the necessary rights to continue this operation", _

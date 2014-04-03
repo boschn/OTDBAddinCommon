@@ -21,6 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>otdbAddIn.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>otdbAddIn.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -45,6 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -57,6 +60,8 @@
     <Reference Include="Telerik.WinControls.GridView, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="Telerik.WinControls.RichTextBox, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL" />
+    <Reference Include="Telerik.WinControls.Themes.TelerikMetro, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL" />
     <Reference Include="Telerik.WinControls.Themes.TelerikMetroBlue, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -69,6 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
+    <Import Include="OnTrack.AddIn.OnTrack.UI" />
+    <Import Include="OnTrack.Ui" />
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Collections.Generic" />
@@ -101,6 +108,9 @@
     <Compile Include="UIAboutBox.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UIControlDataGridView.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UIFormBatchProcesses.Designer.vb">
       <DependentUpon>UIFormBatchProcesses.vb</DependentUpon>
     </Compile>
@@ -119,6 +129,12 @@
     <Compile Include="UIFormMessageLog.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UIFormDBExplorer.Designer.vb">
+      <DependentUpon>UIFormDBExplorer.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIFormDBExplorer.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UIFormSetting.designer.vb">
       <DependentUpon>UIFormSetting.vb</DependentUpon>
     </Compile>
@@ -132,6 +148,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UIMessageBox.vb" />
+    <Compile Include="UIControl.Designer.vb">
+      <DependentUpon>UIControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UIControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -143,6 +165,9 @@
     <EmbeddedResource Include="UIAboutBox.resx">
       <DependentUpon>UIAboutBox.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UIControlDataGridView.resx">
+      <DependentUpon>UIControlDataGridView.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UIFormBatchProcesses.resx">
       <DependentUpon>UIFormBatchProcesses.vb</DependentUpon>
     </EmbeddedResource>
@@ -152,11 +177,17 @@
     <EmbeddedResource Include="UIFormMessageLog.resx">
       <DependentUpon>UIFormMessageLog.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UIFormDBExplorer.resx">
+      <DependentUpon>UIFormDBExplorer.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UIFormSetting.resx">
       <DependentUpon>UIFormSetting.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UIFormWorkXConfig.resx">
       <DependentUpon>UIFormWorkXConfig.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIControl.resx">
+      <DependentUpon>UIControl.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +196,7 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
+    <None Include="My Project\DataSources\UIFormObjectExplorer.ObjectStructureItem.datasource" />
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
@@ -251,6 +283,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\setting_config.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\twitter_2.png" />
+    <None Include="Resources\school.png" />
+    <None Include="Resources\pin_sq_down.png" />
+    <None Include="Resources\doc_lines.png" />
+    <None Include="Resources\checkbox_unchecked.png" />
+    <None Include="Resources\cert.png" />
+    <None Include="Resources\align_just.png" />
+    <None Include="Resources\3x3_grid.png" />
+    <Content Include="Resources\business.png" />
+    <Content Include="Resources\business_contact.png" />
+    <None Include="Resources\wrench_plus.png" />
+    <None Include="Resources\playback_reload.png" />
+    <None Include="Resources\list_bullets.png" />
+    <None Include="Resources\db.png" />
+    <Content Include="Resources\library.png" />
+    <None Include="Resources\rail_metro_24_2x.png" />
+    <None Include="Resources\memory_module.png" />
+    <Content Include="Resources\table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{94E38DFF-614B-4CBD-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <ProjectExtensions>

@@ -6,7 +6,7 @@ Imports OnTrack.UI
 Public Class UIFormLogin
     Implements iUINativeFormLogin
 
-    Private myshadow As clsCoreUILogin
+    Private myshadow As CoreLoginForm
 
     Public Sub New()
 
@@ -208,7 +208,7 @@ Public Class UIFormLogin
 
     Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click
         If Not myshadow Is Nothing Then
-            DirectCast(Me.OtdbShadow, clsCoreUILogin).Ok = False
+            DirectCast(Me.OtdbShadow, CoreLoginForm).Ok = False
         End If
         Me.Close()
     End Sub
@@ -230,7 +230,6 @@ Public Class UIFormLogin
                     myshadow.Accessright = otAccessRight.Prohibited
             End Select
 
-
             If myshadow.Verify() Then
                 Me.Close()
             Else
@@ -251,8 +250,8 @@ Public Class UIFormLogin
     Private Sub TelerikLoginForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If myshadow Is Nothing Then
         Else
-            Me.ConfigSetEnabled = myshadow.EnableConfigSet
-
+            Me.ConfigSetEnabled = myshadow.EnableChangeConfigSet
+            RemoveHandler CbConfigSet.SelectedIndexChanged, AddressOf Me.CbConfigSet_SelectedIndexChanged
             Me.ConfigSetList = myshadow.PossibleConfigSets
             Me.ConfigSet = myshadow.Configset
             '** add handler here otherwise while adding the possible configs also the configset in myshadow will be set anew

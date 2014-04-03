@@ -8,7 +8,10 @@ Imports OnTrack.XChange
 Imports OnTrack.AddIn.My
 Imports OnTrack.AddIn
 
-
+''' <summary>
+''' Form Class to work with XConfigs
+''' </summary>
+''' <remarks></remarks>
 
 Public Class UIFormWorkXConfig
 
