@@ -84,7 +84,7 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="modDoc9QuickNDirty.vb">
+    <Compile Include="modQuickNDirty.vb">
       <CustomToolNamespace>OnTrack.Addin</CustomToolNamespace>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -302,6 +302,8 @@
     <Content Include="Resources\library.png" />
     <None Include="Resources\rail_metro_24_2x.png" />
     <None Include="Resources\memory_module.png" />
+    <None Include="Resources\minus.png" />
+    <None Include="Resources\plus.png" />
     <Content Include="Resources\table.png" />
   </ItemGroup>
   <ItemGroup>

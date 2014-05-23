@@ -3,6 +3,7 @@ Imports Telerik.WinControls.UI
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports OnTrack.Database
+Imports OnTrack.Commons
 
 Namespace Global.OnTrack.UI
     Public Class UIControlDataGridView
@@ -21,7 +22,7 @@ Namespace Global.OnTrack.UI
                 Return Me._statuslabel
             End Get
             Set(value As RadLabelElement)
-                Me._statuslabel = Value
+                Me._statuslabel = value
             End Set
         End Property
 
@@ -33,8 +34,8 @@ Namespace Global.OnTrack.UI
             Get
                 Return Me._modeltable
             End Get
-            Set
-                Me._modeltable = Value
+            Set(value As ormModelTable)
+                Me._modeltable = value
             End Set
         End Property
 
@@ -47,7 +48,7 @@ Namespace Global.OnTrack.UI
         Public Sub OnRowAdding(sender As Object, e As GridViewRowCancelEventArgs) Handles Me.UserAddingRow
             If sender.Equals(Me) Then
                 If Not CurrentSession.RequestUserAccess(accessRequest:=otAccessRight.ReadUpdateData, loginOnFailed:=True, _
-                                                        objectoperations:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPCreate}) Then
+                                                        objecttransactions:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPCreate}) Then
                     AddStatusMessage("no right to add a object of type " & _modeltable.ObjectID)
                     e.Cancel = True
                 End If
@@ -94,8 +95,8 @@ Namespace Global.OnTrack.UI
                         OrElse (e.OldValue IsNot Nothing AndAlso e.Value Is Nothing) Then
                         Debug.WriteLine(Me.Name & " OnCellValidating :" & _modeltable.Columns(e.ColumnIndex).ColumnName & " value:" & e.Value & " oldvalue:" & e.OldValue)
                         Dim anObjectEntry As iormObjectEntry = _modeltable.GetObjectEntry(columnname:=e.Column.Name)
-                        Dim aLog As New ObjectLog
-                        Dim result As otValidationResultType = Global.OnTrack.Database.ObjectValidator.ValidateEntry(anObjectEntry, e.Value, aLog)
+                        Dim aLog As New ObjectMessageLog
+                        Dim result As otValidationResultType = Global.OnTrack.Database.ObjectValidator.Validate(anObjectEntry, e.Value, aLog)
                         If result = otValidationResultType.FailedNoSave Then e.Cancel = True ' to cancel
 
                     End If
@@ -214,7 +215,7 @@ Namespace Global.OnTrack.UI
         ''' <remarks></remarks>
         Public Sub OnRowDeleting(sender As Object, e As GridViewRowCancelEventArgs) Handles Me.UserDeletingRow
             If Not CurrentSession.RequestUserAccess(accessRequest:=otAccessRight.ReadUpdateData, loginOnFailed:=True, _
-                                                       objectoperations:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPDelete}) Then
+                                                       objecttransactions:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPDelete}) Then
                 AddStatusMessage("no right to delete a object of type " & _modeltable.ObjectID)
                 e.Cancel = True
             End If
@@ -226,9 +227,20 @@ Namespace Global.OnTrack.UI
         ''' <param name="e"></param>
         ''' <remarks></remarks>
         Public Sub OnInitialize(sender As Object, e As EventArgs) Handles Me.Initialized
+            Me.EnableCustomFiltering = False
+            Me.EnableCustomGrouping = False
+            Me.EnableCustomSorting = False
+            Me.EnableHotTracking = False
+
+            Me.MasterTemplate.ShowHeaderCellButtons = True
+            Me.MasterTemplate.ShowFilteringRow = False
+            Me.MasterTemplate.EnableHierarchyFiltering = True
+            Me.MasterTemplate.EnableCustomFiltering = False
+
+
             Me.EnableFiltering = True
             Me.MasterTemplate.EnableFiltering = True
-            Me.EnableGrouping = True
+            Me.EnableGrouping = False
             Me.EnableSorting = True
         End Sub
         ''' <summary>
@@ -281,7 +293,7 @@ Namespace Global.OnTrack.UI
 
             If CurrentSession.IsRunning Then
                 If CurrentSession.RequireAccessRight(otAccessRight.ReadUpdateData) Then
-                    CurrentSession.CurrentDomain.SetSetting(id:="UI." & Me.Name & "." & _modeltable.Id, datatype:=otFieldDataType.Text, _
+                    CurrentSession.CurrentDomain.SetSetting(id:="UI." & Me.Name & "." & _modeltable.Id, datatype:=otDataType.Text, _
                                                             description:="Setting for the UI ControlDataGridView Element", value:=aString.ToString)
                     If CurrentSession.CurrentDomain.Persist() Then
                         AddStatusMessage("layout format saved in database domain (" & CurrentSession.CurrentDomainID & ") setting")
@@ -358,7 +370,7 @@ Namespace Global.OnTrack.UI
         Private Sub UIControlDataGridView_ValueChanging(sender As Object, e As Telerik.WinControls.UI.GridViewCellCancelEventArgs) Handles Me.CellBeginEdit
 
             If Not CurrentSession.RequestUserAccess(accessRequest:=otAccessRight.ReadUpdateData, loginOnFailed:=True, _
-                                                      objectoperations:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPPersist}) Then
+                                                      objecttransactions:={Me._modeltable.ObjectID & "." & ormDataObject.ConstOPPersist}) Then
                 AddStatusMessage("no right to change a object of type " & _modeltable.ObjectID)
                 e.Cancel = True
             End If

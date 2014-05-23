@@ -17,7 +17,7 @@ Public Class UIFormWorkXConfig
 
     Dim _Connection As ormConnection
 
-    Dim _XconfigList As List(Of XConfig)
+    Dim _XconfigList As List(Of XChangeConfiguration)
     Dim _XConfigDataTable As New DataTable
     Dim _XConfigObjectsDataTable As New DataTable
     Dim _xConfigAttributesDataTable As New DataTable
@@ -30,7 +30,7 @@ Public Class UIFormWorkXConfig
         If CurrentSession.RequireAccessRight(otAccessRight.[ReadOnly]) Then
 
             ' get the ConfigList
-            _XconfigList = XConfig.All
+            _XconfigList = XChangeConfiguration.All
             ' setup of the workspaceID table
             _XConfigDataTable.Columns.Add("Configname", GetType(String))
             _XConfigDataTable.Columns.Add("Description", GetType(String))
@@ -58,12 +58,12 @@ Public Class UIFormWorkXConfig
     Public Sub LoadDataPanel(ByVal index As UShort)
 
         ' get the Config
-        Dim aXConfig As XConfig = _XconfigList.ElementAt(index)
+        Dim aXConfig As XChangeConfiguration = _XconfigList.ElementAt(index)
 
         Me.ConfigNameTb.Text = aXConfig.Configname
         Me.DescriptionTB.Text = aXConfig.Description
         Me.OutlineCombo.Text = aXConfig.OutlineID
-        If aXConfig.AllowDynamicAttributes Then
+        If aXConfig.AllowDynamicEntries Then
             Me.DynamicIDButton.Text = "is dynamic"
             Me.DynamicIDButton.ToggleState = Enumerations.ToggleState.On
 
@@ -74,18 +74,18 @@ Public Class UIFormWorkXConfig
 
 
         ' fill the attributes
-        Dim AttribColl As List(Of XConfigAttributeEntry) = aXConfig.Attributes
+        Dim AttribColl As List(Of XChangeObjectEntry) = aXConfig.GetObjectEntries
         Dim _xConfigAttributesDataTable = New DataTable
         _xConfigAttributesDataTable.Columns.Add("ID", GetType(String))
         _xConfigAttributesDataTable.Columns.Add("fieldname", GetType(String))
-        _xConfigAttributesDataTable.Columns.Add("Type", GetType(otFieldDataType))
+        _xConfigAttributesDataTable.Columns.Add("Type", GetType(otDataType))
         _xConfigAttributesDataTable.Columns.Add("ordinal", GetType(Long))
         _xConfigAttributesDataTable.Columns.Add("Title", GetType(String))
         _xConfigAttributesDataTable.Columns.Add("Aliases", GetType(String))
 
         For Each attrib In AttribColl
-            _xConfigAttributesDataTable.Rows.Add(attrib.ID, _
-                                                 attrib.Entryname, _
+            _xConfigAttributesDataTable.Rows.Add(attrib.XID, _
+                                                 attrib.ObjectEntryname, _
                                                  attrib.[ObjectEntryDefinition].Datatype, _
                                                  attrib.ordinal, _
                                                  attrib.[ObjectEntryDefinition].Title, _
@@ -97,7 +97,7 @@ Public Class UIFormWorkXConfig
         Me.XConfigIDsGView.MasterTemplate.AutoSizeColumnsMode = GridViewAutoSizeColumnsMode.Fill
 
         ' fill the objects
-        Dim ObjectsColl = aXConfig.Objects
+        Dim ObjectsColl = aXConfig.[XChangeObjects]
         Dim _xConfigObjectsDataTable = New DataTable
         _xConfigObjectsDataTable.Columns.Add("Order", GetType(UShort))
         _xConfigObjectsDataTable.Columns.Add("Object name", GetType(String))
@@ -137,9 +137,9 @@ Public Class UIFormWorkXConfig
     Private Sub CreateExpediterMenuItem_Click(sender As Object, e As EventArgs) Handles CreateExpediterConfigMenuItem.Click
 
         'Create the special IDs
-        If Global.OnTrack.AddIn.createExpediterXConfig(otXChangeCommandType.Read) Then
-            Me.StatusLabel.Text = MySettings.Default.DefaultExpediterConfigNameDynamic & " successfully created"
-        End If
+        'If Global.OnTrack.AddIn.createExpediterXConfig(otXChangeCommandType.Read) Then
+        '    Me.StatusLabel.Text = MySettings.Default.DefaultExpediterConfigNameDynamic & " successfully created"
+        'End If
     End Sub
 
     Private Sub XConfigIDsGView_Click(sender As Object, e As EventArgs) Handles XConfigIDsGView.Click

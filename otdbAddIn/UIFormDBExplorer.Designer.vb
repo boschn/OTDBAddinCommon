@@ -94,13 +94,13 @@ Partial Class UIFormDBExplorer
         Me.RadSplitContainer1.Controls.Add(Me.SplitPanel1)
         Me.RadSplitContainer1.Controls.Add(Me.SplitPanel2)
         Me.RadSplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.RadSplitContainer1.Location = New System.Drawing.Point(0, 60)
+        Me.RadSplitContainer1.Location = New System.Drawing.Point(0, 36)
         Me.RadSplitContainer1.Name = "RadSplitContainer1"
         '
         '
         '
         Me.RadSplitContainer1.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.RadSplitContainer1.Size = New System.Drawing.Size(883, 317)
+        Me.RadSplitContainer1.Size = New System.Drawing.Size(883, 341)
         Me.RadSplitContainer1.TabIndex = 2
         Me.RadSplitContainer1.TabStop = False
         Me.RadSplitContainer1.Text = "RadSplitContainer1"
@@ -115,7 +115,7 @@ Partial Class UIFormDBExplorer
         '
         '
         Me.SplitPanel1.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.SplitPanel1.Size = New System.Drawing.Size(238, 317)
+        Me.SplitPanel1.Size = New System.Drawing.Size(238, 341)
         Me.SplitPanel1.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(-0.2290168!, 0.0!)
         Me.SplitPanel1.SizeInfo.SplitterCorrection = New System.Drawing.Size(-191, 0)
         Me.SplitPanel1.TabIndex = 0
@@ -136,7 +136,7 @@ Partial Class UIFormDBExplorer
         Me.ObjectTree.Name = "ObjectTree"
         Me.ObjectTree.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.ObjectTree.ShowLines = True
-        Me.ObjectTree.Size = New System.Drawing.Size(238, 317)
+        Me.ObjectTree.Size = New System.Drawing.Size(238, 341)
         Me.ObjectTree.SpacingBetweenNodes = -1
         Me.ObjectTree.TabIndex = 0
         Me.ObjectTree.Text = "Objectsstructure"
@@ -151,7 +151,7 @@ Partial Class UIFormDBExplorer
         '
         '
         Me.SplitPanel2.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.SplitPanel2.Size = New System.Drawing.Size(642, 317)
+        Me.SplitPanel2.Size = New System.Drawing.Size(642, 341)
         Me.SplitPanel2.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(0.2290168!, 0.0!)
         Me.SplitPanel2.SizeInfo.SplitterCorrection = New System.Drawing.Size(191, 0)
         Me.SplitPanel2.TabIndex = 1
@@ -166,7 +166,7 @@ Partial Class UIFormDBExplorer
         Me.RadPageView.Location = New System.Drawing.Point(0, 0)
         Me.RadPageView.Name = "RadPageView"
         Me.RadPageView.SelectedPage = Me.PageData
-        Me.RadPageView.Size = New System.Drawing.Size(642, 317)
+        Me.RadPageView.Size = New System.Drawing.Size(642, 341)
         Me.RadPageView.TabIndex = 0
         Me.RadPageView.Text = "RadPageView1"
         Me.RadPageView.ThemeName = "TelerikMetroBlue"
@@ -187,25 +187,22 @@ Partial Class UIFormDBExplorer
         Me.PageData.Enabled = False
         Me.PageData.Location = New System.Drawing.Point(5, 31)
         Me.PageData.Name = "PageData"
-        Me.PageData.Size = New System.Drawing.Size(632, 281)
+        Me.PageData.Size = New System.Drawing.Size(632, 305)
         Me.PageData.Text = "Data"
         '
         'DataGrid
         '
         Me.DataGrid.AutoSizeRows = True
         Me.DataGrid.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DataGrid.EnableCustomFiltering = True
-        Me.DataGrid.EnableCustomGrouping = True
-        Me.DataGrid.EnableCustomSorting = True
         Me.DataGrid.Location = New System.Drawing.Point(0, 0)
         '
         'DataGrid
         '
-        Me.DataGrid.MasterTemplate.EnableCustomFiltering = True
-        Me.DataGrid.MasterTemplate.EnableCustomGrouping = True
-        Me.DataGrid.MasterTemplate.EnableCustomSorting = True
+        Me.DataGrid.MasterTemplate.EnableFiltering = True
+        Me.DataGrid.Modeltable = Nothing
         Me.DataGrid.Name = "DataGrid"
-        Me.DataGrid.Size = New System.Drawing.Size(632, 281)
+        Me.DataGrid.Size = New System.Drawing.Size(632, 305)
+        Me.DataGrid.Status = Nothing
         Me.DataGrid.TabIndex = 0
         Me.DataGrid.Text = "DataGrid"
         '
@@ -235,7 +232,7 @@ Partial Class UIFormDBExplorer
         Me.Menu.Location = New System.Drawing.Point(0, 0)
         Me.Menu.Name = "Menu"
         Me.Menu.Padding = New System.Windows.Forms.Padding(2, 2, 0, 0)
-        Me.Menu.Size = New System.Drawing.Size(883, 60)
+        Me.Menu.Size = New System.Drawing.Size(883, 36)
         Me.Menu.TabIndex = 0
         Me.Menu.ThemeName = "TelerikMetroBlue"
         '
@@ -247,6 +244,8 @@ Partial Class UIFormDBExplorer
         Me.RefreshTreeButton.Name = "RefreshTreeButton"
         Me.RefreshTreeButton.Text = "Refresh"
         Me.RefreshTreeButton.Visibility = Telerik.WinControls.ElementVisibility.Visible
+        CType(Me.RefreshTreeButton.GetChildAt(2), Telerik.WinControls.UI.RadMenuItemLayout).ScaleTransform = New System.Drawing.SizeF(1.0!, 1.0!)
+        CType(Me.RefreshTreeButton.GetChildAt(2).GetChildAt(0), Telerik.WinControls.UI.MenuImageAndTextLayout).ScaleTransform = New System.Drawing.SizeF(0.5!, 0.5!)
         '
         'ContextMenuStrip1
         '

@@ -1,5 +1,6 @@
 ﻿Imports OnTrack
 Imports OnTrack.UI
+Imports OnTrack.Database
 
 
 
@@ -99,7 +100,7 @@ Public Class UIFormLogin
     End Function
 
     Public Function ShowOTDBForm() As Object Implements iUINativeForm.ShowOTDBForm
-       
+
         Me.ShowDialog()
     End Function
 
@@ -129,8 +130,8 @@ Public Class UIFormLogin
         Get
             Return CbAccess.DataSource
         End Get
-        Set
-            CbAccess.DataSource = Value
+        Set(value As List(Of String))
+            CbAccess.DataSource = value
         End Set
     End Property
 
@@ -142,8 +143,8 @@ Public Class UIFormLogin
         Get
             Return CbAccess.Enabled
         End Get
-        Set
-            CbAccess.Enabled = Value
+        Set(value As String)
+            CbAccess.Enabled = value
 
         End Set
     End Property
@@ -164,7 +165,7 @@ Public Class UIFormLogin
     ''' <value>The config set.</value>
     Public Property ConfigSet() As String Implements iUINativeFormLogin.ConfigSet
         Get
-            Return CBConfigSet.Text
+            Return CbConfigSet.Text
         End Get
         Set(value As String)
             CbConfigSet.Text = value
@@ -177,10 +178,10 @@ Public Class UIFormLogin
     ''' <value>The config set list.</value>
     Public Property ConfigSetList() As List(Of String) Implements iUINativeFormLogin.ConfigSetList
         Get
-            Return CBConfigSet.DataSource
+            Return CbConfigSet.DataSource
         End Get
-        Set
-            CBConfigSet.DataSource = Value
+        Set(value As List(Of String))
+            CbConfigSet.DataSource = value
         End Set
     End Property
 
@@ -190,10 +191,10 @@ Public Class UIFormLogin
     ''' <value>The config set enabled.</value>
     Public Property ConfigSetEnabled() As Boolean Implements iUINativeFormLogin.ConfigSetEnabled
         Get
-            Return CBConfigSet.Enabled
+            Return CbConfigSet.Enabled
         End Get
-        Set
-            CBConfigSet.Enabled = Value
+        Set(value As Boolean)
+            CbConfigSet.Enabled = value
         End Set
     End Property
 

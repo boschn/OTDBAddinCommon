@@ -20,6 +20,7 @@ Imports OnTrack.XChange
 Imports OnTrack.AddIn.My
 Imports OnTrack.Deliverables
 Imports OnTrack.Parts
+Imports OnTrack.Database
 
 Public Module Doc9QuickNDirty
 
@@ -30,36 +31,37 @@ Public Module Doc9QuickNDirty
     Public CreateDoc18ERoadmapConfig As CreateDoc18ERoadmapConfigDelegate
 
 
-    'Private GlobalDoc9XChangeConfig As clsOTDBXChangeConfig
+    'Private GlobalDoc9XChangeConfig As XChangeConfiguration
     ''' <summary>
     ''' creates a special XConfig for Microsoft Project Doc18 with outline
     ''' </summary>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function CreateDoc18WkPkXConfig(Optional ByVal XCMD As otXChangeCommandType = otXChangeCommandType.Read) As XChange.clsOTDBXChangeConfig
-        Dim aXChangeConfig As New clsOTDBXChangeConfig
+    Public Function CreateDoc18WkPkXConfig(Optional ByVal XCMD As otXChangeCommandType = otXChangeCommandType.Read) As XChange.XChangeConfiguration
+
 
         Try
             If Not CurrentSession.RequireAccessRight(accessRequest:=otAccessRight.ReadUpdateData) Then
 
                 Return Nothing
             End If
+            Dim aXChangeConfig As XChangeConfiguration = XChangeConfiguration.Create(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
             '* create x config
-            If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc18MSPConfigNameDynamic) Then
-                aXChangeConfig.Inject(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+            If aXChangeConfig IsNot Nothing Then
+                aXChangeConfig = XChangeConfiguration.Retrieve(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
                 aXChangeConfig.Delete()
-
+                aXChangeConfig = XChangeConfiguration.Create(MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
             End If
 
             '* add objects
             aXChangeConfig.AddObjectByName(Deliverables.Deliverable.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Scheduling.Schedule.ConstTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Scheduling.ScheduleEdition.ConstTableID, xcmd:=XCMD)
             aXChangeConfig.AddObjectByName(Deliverables.Target.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Deliverables.Track.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Parts.Part.constTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Deliverables.Track.ConstTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Parts.Part.ConstTableID, xcmd:=XCMD)
 
             '* Add Attribute Mapping
-            aXChangeConfig.AllowDynamicAttributes = True
+            aXChangeConfig.AllowDynamicEntries = True
 
 
             ''''' Create the OUTLINE FOR IT
@@ -81,18 +83,18 @@ Public Module Doc9QuickNDirty
             If Not aCommand.Prepared Then
                 aCommand.select = Deliverable.ConstTableID & ".[" & Deliverable.constFNUid & "] ," & _
                                   Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] ," & _
-                                  Parts.Part.constTableID & ".[" & Part.constFNRespOU & "] ," & _
-                                   Parts.Part.constTableID & ".[" & Part.ConstFNWorkpackage & "] "
-                aCommand.AddTable(tableid:=Part.constTableID, addAllFields:=False)
+                                  Parts.Part.ConstTableID & ".[" & Part.constFNRespOU & "] ," & _
+                                   Parts.Part.ConstTableID & ".[" & Part.ConstFNWorkpackage & "] "
+                aCommand.AddTable(tableid:=Part.ConstTableID, addAllFields:=False)
                 aCommand.AddTable(tableid:=TrackItem.constTableID, addAllFields:=False)
                 '" inner join " & clsOTDBTrackItem.constTableID & " on " & _
                 aCommand.Where = _
                     Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] = " & TrackItem.constTableID & ".[" & TrackItem.constFNMatchCode & "]" & _
                      " AND " & _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNPartID & "] = " & Part.constTableID & ".[" & Part.constFNPartID & "]"
+                    Deliverable.ConstTableID & ".[" & Deliverable.constFNPartID & "] = " & Part.ConstTableID & ".[" & Part.ConstFNPartID & "]"
 
                 aCommand.Where &= " AND " & Deliverable.ConstTableID & ".[" & Deliverable.ConstFNIsDeleted & "]=@IsDeleted and lcase(" & _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNTypeID & "]) <> 'struktur' and " _
+                    Deliverable.ConstTableID & ".[" & Deliverable.constFNDeliverableTypeID & "]) <> 'struktur' and " _
                     & Deliverable.ConstTableID & ".[" & Deliverable.constFNfuid & "] = 0"  ' no revision
 
                 aCommand.AddParameter(New Database.ormSqlCommandParameter(ID:="@IsDeleted", _
@@ -100,8 +102,8 @@ Public Module Doc9QuickNDirty
                                                                                 tablename:=Deliverable.ConstTableID))
 
                 aCommand.OrderBy = "[" & TrackItem.constTableID & "." & TrackItem.constFNOrdinal & "] asc ," & _
-                                   "[" & Part.constTableID & "." & Part.constFNRespOU & "] asc, " & _
-                                   "[" & Part.constTableID & "." & Part.ConstFNWorkpackage & "] asc " & _
+                                   "[" & Part.ConstTableID & "." & Part.constFNRespOU & "] asc, " & _
+                                   "[" & Part.ConstTableID & "." & Part.ConstFNWorkpackage & "] asc " & _
                                    ""
                 aCommand.Prepare()
             End If
@@ -196,51 +198,7 @@ Public Module Doc9QuickNDirty
 
     End Function
 
-    ''' <summary>
-    ''' creates a special XConfig for Microsoft Project Doc18 with outline
-    ''' </summary>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function CreateDoc18ERoadmapXConfig(Optional ByVal XCMD As otXChangeCommandType = otXChangeCommandType.Read) As XChange.clsOTDBXChangeConfig
-        Dim aXChangeConfig As New clsOTDBXChangeConfig
 
-        Try
-            If Not CurrentSession.RequireAccessRight(accessRequest:=otAccessRight.ReadUpdateData) Then
-
-                Return Nothing
-            End If
-            '* create x config
-            If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc18ERoadConfigNameDynamic) Then
-                aXChangeConfig.Inject(MySettings.Default.DefaultDoc18ERoadConfigNameDynamic)
-                aXChangeConfig.Delete()
-
-            End If
-
-            '* add objects
-            aXChangeConfig.AddObjectByName(Deliverables.Deliverable.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Scheduling.Schedule.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Deliverables.Target.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Deliverables.Track.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Parts.Part.constTableID, xcmd:=XCMD)
-
-            '* Add Attribute Mapping
-            aXChangeConfig.AllowDynamicAttributes = True
-
-
-
-            '*
-            If aXChangeConfig.Persist() Then
-                Return aXChangeConfig
-            Else
-                Return Nothing
-            End If
-
-        Catch ex As Exception
-            CoreMessageHandler(exception:=ex, subname:="Doc9QuickNDirty.CreateDoc18ERoadmapXConfig")
-            Return Nothing
-        End Try
-
-    End Function
 
     ''' <summary>
     '''  Creates a special XConfig (Dynmaic) for the Doc9 by Hand and saves it
@@ -249,12 +207,11 @@ Public Module Doc9QuickNDirty
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function CreateDoc9XConfig(Optional ByVal XCMD As otXChangeCommandType = otXChangeCommandType.Read) As Boolean
-        Dim aXChangeConfig As New clsOTDBXChangeConfig
+        Dim aXChangeConfig As XChangeConfiguration = XChangeConfiguration.Create(MySettings.Default.DefaultDoc9ConfigNameDynamic)
 
-        If Not aXChangeConfig.Create(MySettings.Default.DefaultDoc9ConfigNameDynamic) Then
-            aXChangeConfig.Inject(MySettings.Default.DefaultDoc9ConfigNameDynamic)
+        If aXChangeConfig Is Nothing Then
+            aXChangeConfig = XChangeConfiguration.Retrieve(MySettings.Default.DefaultDoc9ConfigNameDynamic)
             aXChangeConfig.Delete()
-
         End If
 
         Call aXChangeConfig.AddObjectByName("tblschedules", xcmd:=XCMD)
@@ -268,31 +225,11 @@ Public Module Doc9QuickNDirty
         Call aXChangeConfig.AddObjectByName("tblDeliverableWorkstationCodes", xcmd:=XCMD)
         Call aXChangeConfig.AddObjectByName("tblxoutlineitems", xcmd:=XCMD)
 
-        aXChangeConfig.AllowDynamicAttributes = True
+        aXChangeConfig.AllowDynamicEntries = True
 
         CreateDoc9XConfig = aXChangeConfig.Persist()
     End Function
-    ''' <summary>
-    ''' creates a special expediter config
-    ''' </summary>
-    ''' <param name="XCMD"></param>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function createExpediterXConfig(Optional ByVal XCMD As otXChangeCommandType = otXChangeCommandType.Read) As Boolean
-        Dim aXChangeConfig As New clsOTDBXChangeConfig
 
-        If Not aXChangeConfig.Create(MySettings.Default.DefaultExpediterConfigNameDynamic) Then
-            aXChangeConfig.Inject(MySettings.Default.DefaultExpediterConfigNameDynamic)
-            aXChangeConfig.Delete()
-
-        End If
-
-        Call aXChangeConfig.AddObjectByName("ctblDeliverableExpeditingStatus", xcmd:=XCMD)
-
-        aXChangeConfig.AllowDynamicAttributes = True
-
-        Return aXChangeConfig.Persist()
-    End Function
 
 
 End Module

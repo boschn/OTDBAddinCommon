@@ -792,5 +792,16 @@ Public Class UIFormSetting
         ' Add any initialization after the InitializeComponent() call.
         _propertyStore = Me.UpdatePropertyStore()
     End Sub
-  
+
+    ''' <summary>
+    ''' Click the button
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub CreateData_Click(sender As Object, e As EventArgs) Handles CreateData.Click
+        If createDatabase.InitializeTestData() Then
+            Me.StatusLabel.Text = "test data initialized"
+        End If
+    End Sub
 End Class
