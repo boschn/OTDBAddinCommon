@@ -97,7 +97,7 @@ Namespace Global.OnTrack.UI
                         Dim anObjectEntry As iormObjectEntry = _modeltable.GetObjectEntry(columnname:=e.Column.Name)
                         Dim aLog As New ObjectMessageLog
                         Dim result As otValidationResultType = Global.OnTrack.Database.ObjectValidator.Validate(anObjectEntry, e.Value, aLog)
-                        If result = otValidationResultType.FailedNoSave Then e.Cancel = True ' to cancel
+                        If result = otValidationResultType.FailedNoProceed Then e.Cancel = True ' to cancel
 
                     End If
 
