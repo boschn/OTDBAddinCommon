@@ -65,11 +65,12 @@ Public Module Doc9QuickNDirty
 
 
             ''''' Create the OUTLINE FOR IT
-            Dim anOutline As New XOutline
-            If Not anOutline.Create(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic) Then
-                anOutline.Inject(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
-                anOutline.Delete()
-            End If
+            Dim anOutline As XOutline = XOutline.Create(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+            If anOutline Is Nothing Then anOutline = XOutline.Retrieve(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+            'If Not anOutline.Create(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic) Then
+            '    anOutline.Inject(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic)
+            '    anOutline.Delete()
+            'End If
             anOutline.DynamicAddRevisions = True
 
             '***
@@ -131,15 +132,15 @@ Public Module Doc9QuickNDirty
                     If precode = "" OrElse precode <> aRecord.GetValue(2) Then
                         precode = aRecord.GetValue(2)
                         level = 0
-                        Dim anOIGroup As New XOutlineItem
-                        anOIGroup.IsGroup = True
-                        anOIGroup.IsText = True
-                        anOIGroup.Text = precode
-                        dept = ""
-                        wkpk = ""
-                        If anOIGroup.Create(ID:=anOutline.id, ordinal:=anordinal) Then
+                        Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
+                        If anOIGroup IsNot Nothing Then
+                            anOIGroup.IsGroup = True
+                            anOIGroup.IsText = True
+                            anOIGroup.Text = precode
+                            dept = ""
+                            wkpk = ""
                             anOIGroup.Level = level
-                            anOutline.AddOutlineItem(anOIGroup)
+                            anOutline.AddItem(anOIGroup)
                         End If
                         anordinal += 10
                     End If
@@ -147,14 +148,14 @@ Public Module Doc9QuickNDirty
                     If dept = "" OrElse dept <> aRecord.GetValue(3) Then
                         dept = aRecord.GetValue(3)
                         level = 1
-                        Dim anOIGroup As New XOutlineItem
-                        anOIGroup.IsGroup = True
-                        anOIGroup.IsText = True
-                        anOIGroup.Text = precode & " ( " & dept & " )"
-                        wkpk = ""
-                        If anOIGroup.Create(ID:=anOutline.id, ordinal:=anordinal) Then
+                        Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
+                        If anOIGroup IsNot Nothing Then
+                            anOIGroup.IsGroup = True
+                            anOIGroup.IsText = True
+                            anOIGroup.Text = precode & " ( " & dept & " )"
+                            wkpk = ""
                             anOIGroup.Level = level
-                            anOutline.AddOutlineItem(anOIGroup)
+                            anOutline.AddItem(anOIGroup)
                         End If
                         anordinal += 10
                     End If
@@ -162,28 +163,28 @@ Public Module Doc9QuickNDirty
                     If wkpk = "" OrElse wkpk <> aRecord.GetValue(4) Then
                         wkpk = aRecord.GetValue(4)
                         level = 2
-                        Dim anOIGroup As New XOutlineItem
-                        anOIGroup.IsGroup = True
-                        anOIGroup.IsText = True
-                        anOIGroup.Text = precode & " ( " & dept & " / " & wkpk & " )"
-                        If anOIGroup.Create(ID:=anOutline.id, ordinal:=anordinal) Then
+                        Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
+                        If anOIGroup IsNot Nothing Then
+                            anOIGroup.IsGroup = True
+                            anOIGroup.IsText = True
+                            anOIGroup.Text = precode & " ( " & dept & " / " & wkpk & " )"
                             anOIGroup.Level = level
-                            anOutline.AddOutlineItem(anOIGroup)
+                            anOutline.AddItem(anOIGroup)
                         End If
                         anordinal += 10
                     End If
 
-                    Dim anOutlineItem As New XOutlineItem
-                    If anOutlineItem.Create(ID:=anOutline.id, ordinal:=anordinal, uid:=aRecord.GetValue(1)) Then
+                    Dim anOutlineItem As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal, uid:=aRecord.GetValue(1))
+                    If anOutlineItem IsNot Nothing Then
                         anOutlineItem.Level = level + 1
-                        anOutline.AddOutlineItem(anOutlineItem)
+                        anOutline.AddItem(anOutlineItem)
                     End If
                     anordinal += 10
                 End If
 
             Next
             anOutline.Persist()
-            aXChangeConfig.OutlineID = anOutline.id
+            aXChangeConfig.OutlineID = anOutline.ID
             '*
             If aXChangeConfig.Persist() Then
                 Return aXChangeConfig
