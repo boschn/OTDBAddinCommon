@@ -37,12 +37,14 @@ Partial Class UIFormDBExplorer
         Me.RadPageView = New Telerik.WinControls.UI.RadPageView()
         Me.PageObjectProperties = New Telerik.WinControls.UI.RadPageViewPage()
         Me.PageData = New Telerik.WinControls.UI.RadPageViewPage()
-        Me.DataGrid = New UIControlDataGridView()
         Me.RadMenu1 = New Telerik.WinControls.UI.RadMenu()
         Me.RefreshTableButton = New Telerik.WinControls.UI.RadMenuItem()
         Me.Menu = New Telerik.WinControls.UI.RadMenu()
         Me.RefreshTreeButton = New Telerik.WinControls.UI.RadMenuItem()
+        Me.DomainComboMenu = New Telerik.WinControls.UI.RadMenuComboItem()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.RadMenuItem1 = New Telerik.WinControls.UI.RadMenuItem()
+        Me.RadMenuItem2 = New Telerik.WinControls.UI.RadMenuItem()
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadSplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.RadSplitContainer1.SuspendLayout()
@@ -53,11 +55,9 @@ Partial Class UIFormDBExplorer
         Me.SplitPanel2.SuspendLayout()
         CType(Me.RadPageView, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.RadPageView.SuspendLayout()
-        Me.PageData.SuspendLayout()
-        CType(Me.DataGrid, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.DataGrid.MasterTemplate, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadMenu1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Menu, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.DomainComboMenu.ComboBoxElement, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -183,28 +183,11 @@ Partial Class UIFormDBExplorer
         '
         'PageData
         '
-        Me.PageData.Controls.Add(Me.DataGrid)
         Me.PageData.Enabled = False
         Me.PageData.Location = New System.Drawing.Point(5, 31)
         Me.PageData.Name = "PageData"
         Me.PageData.Size = New System.Drawing.Size(632, 305)
         Me.PageData.Text = "Data"
-        '
-        'DataGrid
-        '
-        Me.DataGrid.AutoSizeRows = True
-        Me.DataGrid.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DataGrid.Location = New System.Drawing.Point(0, 0)
-        '
-        'DataGrid
-        '
-        Me.DataGrid.MasterTemplate.EnableFiltering = True
-        Me.DataGrid.Modeltable = Nothing
-        Me.DataGrid.Name = "DataGrid"
-        Me.DataGrid.Size = New System.Drawing.Size(632, 305)
-        Me.DataGrid.Status = Nothing
-        Me.DataGrid.TabIndex = 0
-        Me.DataGrid.Text = "DataGrid"
         '
         'RadMenu1
         '
@@ -228,7 +211,7 @@ Partial Class UIFormDBExplorer
         '
         'Menu
         '
-        Me.Menu.Items.AddRange(New Telerik.WinControls.RadItem() {Me.RefreshTreeButton})
+        Me.Menu.Items.AddRange(New Telerik.WinControls.RadItem() {Me.RefreshTreeButton, Me.DomainComboMenu})
         Me.Menu.Location = New System.Drawing.Point(0, 0)
         Me.Menu.Name = "Menu"
         Me.Menu.Padding = New System.Windows.Forms.Padding(2, 2, 0, 0)
@@ -243,14 +226,76 @@ Partial Class UIFormDBExplorer
         Me.RefreshTreeButton.Image = Global.OnTrack.AddIn.My.Resources.Resources.playback_reload
         Me.RefreshTreeButton.Name = "RefreshTreeButton"
         Me.RefreshTreeButton.Text = "Refresh"
-        Me.RefreshTreeButton.Visibility = Telerik.WinControls.ElementVisibility.Visible
+        Me.RefreshTreeButton.Visibility = Telerik.WinControls.ElementVisibility.Hidden
         CType(Me.RefreshTreeButton.GetChildAt(2), Telerik.WinControls.UI.RadMenuItemLayout).ScaleTransform = New System.Drawing.SizeF(1.0!, 1.0!)
         CType(Me.RefreshTreeButton.GetChildAt(2).GetChildAt(0), Telerik.WinControls.UI.MenuImageAndTextLayout).ScaleTransform = New System.Drawing.SizeF(0.5!, 0.5!)
+        '
+        'DomainComboMenu
+        '
+        Me.DomainComboMenu.AccessibleDescription = "Domain"
+        Me.DomainComboMenu.AccessibleName = "Domain"
+        '
+        '
+        '
+        Me.DomainComboMenu.ComboBoxElement.AutoCompleteAppend = Nothing
+        Me.DomainComboMenu.ComboBoxElement.AutoCompleteDataSource = Nothing
+        Me.DomainComboMenu.ComboBoxElement.AutoCompleteDisplayMember = Nothing
+        Me.DomainComboMenu.ComboBoxElement.AutoCompleteSuggest = Nothing
+        Me.DomainComboMenu.ComboBoxElement.AutoCompleteValueMember = Nothing
+        Me.DomainComboMenu.ComboBoxElement.DataMember = ""
+        Me.DomainComboMenu.ComboBoxElement.DataSource = Nothing
+        Me.DomainComboMenu.ComboBoxElement.DefaultItemsCountInDropDown = 6
+        Me.DomainComboMenu.ComboBoxElement.DefaultValue = Nothing
+        Me.DomainComboMenu.ComboBoxElement.DisplayMember = ""
+        Me.DomainComboMenu.ComboBoxElement.DropDownAnimationEasing = Telerik.WinControls.RadEasingType.InQuad
+        Me.DomainComboMenu.ComboBoxElement.DropDownAnimationEnabled = True
+        Me.DomainComboMenu.ComboBoxElement.EditableElementText = ""
+        Me.DomainComboMenu.ComboBoxElement.EditorElement = Me.DomainComboMenu.ComboBoxElement
+        Me.DomainComboMenu.ComboBoxElement.EditorManager = Nothing
+        Me.DomainComboMenu.ComboBoxElement.Filter = Nothing
+        Me.DomainComboMenu.ComboBoxElement.FilterExpression = ""
+        Me.DomainComboMenu.ComboBoxElement.Focusable = True
+        Me.DomainComboMenu.ComboBoxElement.FormatString = ""
+        Me.DomainComboMenu.ComboBoxElement.FormattingEnabled = True
+        Me.DomainComboMenu.ComboBoxElement.ItemHeight = 18
+        Me.DomainComboMenu.ComboBoxElement.MaxDropDownItems = 0
+        Me.DomainComboMenu.ComboBoxElement.MaxLength = 32767
+        Me.DomainComboMenu.ComboBoxElement.MaxValue = Nothing
+        Me.DomainComboMenu.ComboBoxElement.MinValue = Nothing
+        Me.DomainComboMenu.ComboBoxElement.NullValue = Nothing
+        Me.DomainComboMenu.ComboBoxElement.Owner = Nothing
+        Me.DomainComboMenu.ComboBoxElement.OwnerOffset = 0
+        Me.DomainComboMenu.ComboBoxElement.ShowImageInEditorArea = True
+        Me.DomainComboMenu.ComboBoxElement.SortStyle = Telerik.WinControls.Enumerations.SortStyle.None
+        Me.DomainComboMenu.ComboBoxElement.Value = Nothing
+        Me.DomainComboMenu.ComboBoxElement.ValueMember = ""
+        Me.DomainComboMenu.DisplayStyle = Telerik.WinControls.DisplayStyle.Text
+        Me.DomainComboMenu.Name = "DomainComboMenu"
+        Me.DomainComboMenu.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None
+        Me.DomainComboMenu.Text = ""
+        Me.DomainComboMenu.ToolTipText = "Set the Current Domain"
+        Me.DomainComboMenu.Visibility = Telerik.WinControls.ElementVisibility.Visible
         '
         'ContextMenuStrip1
         '
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
         Me.ContextMenuStrip1.Size = New System.Drawing.Size(61, 4)
+        '
+        'RadMenuItem1
+        '
+        Me.RadMenuItem1.AccessibleDescription = "RadMenuItem1"
+        Me.RadMenuItem1.AccessibleName = "RadMenuItem1"
+        Me.RadMenuItem1.Name = "RadMenuItem1"
+        Me.RadMenuItem1.Text = "RadMenuItem1"
+        Me.RadMenuItem1.Visibility = Telerik.WinControls.ElementVisibility.Visible
+        '
+        'RadMenuItem2
+        '
+        Me.RadMenuItem2.AccessibleDescription = "RadMenuItem2"
+        Me.RadMenuItem2.AccessibleName = "RadMenuItem2"
+        Me.RadMenuItem2.Name = "RadMenuItem2"
+        Me.RadMenuItem2.Text = "RadMenuItem2"
+        Me.RadMenuItem2.Visibility = Telerik.WinControls.ElementVisibility.Visible
         '
         'UIFormDBExplorer
         '
@@ -281,11 +326,9 @@ Partial Class UIFormDBExplorer
         Me.SplitPanel2.ResumeLayout(False)
         CType(Me.RadPageView, System.ComponentModel.ISupportInitialize).EndInit()
         Me.RadPageView.ResumeLayout(False)
-        Me.PageData.ResumeLayout(False)
-        CType(Me.DataGrid.MasterTemplate, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.DataGrid, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.RadMenu1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.Menu, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.DomainComboMenu.ComboBoxElement, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -310,5 +353,8 @@ Partial Class UIFormDBExplorer
     Friend WithEvents RadMenu1 As Telerik.WinControls.UI.RadMenu
     Friend WithEvents RefreshTableButton As Telerik.WinControls.UI.RadMenuItem
     Friend WithEvents DataGrid As Global.OnTrack.UI.UIControlDataGridView
+    Friend WithEvents DomainComboMenu As Telerik.WinControls.UI.RadMenuComboItem
+    Friend WithEvents RadMenuItem1 As Telerik.WinControls.UI.RadMenuItem
+    Friend WithEvents RadMenuItem2 As Telerik.WinControls.UI.RadMenuItem
 End Class
 

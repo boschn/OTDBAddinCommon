@@ -2,7 +2,8 @@
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports OnTrack.UI
-Imports OnTrack.database
+Imports OnTrack.Database
+Imports Telerik.WinControls
 
 
 ''' <summary>
@@ -96,13 +97,16 @@ Public Class UIFormDBExplorer
                 Return Me._DataItem
             End Get
             Set(value As Object)
-                Me._DataItem = Value
+                Me._DataItem = value
             End Set
         End Property
 
     End Class
 
     Private _topItems As New List(Of ObjectStructureItem)
+    Dim _selectedDomainID As String
+    Private WithEvents _otdbsession As Session
+
     ''' <summary>
     ''' Constructor
     ''' </summary>
@@ -114,6 +118,8 @@ Public Class UIFormDBExplorer
 
         ' Add any initialization after the InitializeComponent() call.
         ' nothing on the shadow
+        Me.DataGrid = New UIControlDataGridView()
+        _otdbsession = ot.CurrentSession
 
     End Sub
 
@@ -187,6 +193,30 @@ Public Class UIFormDBExplorer
     Public Overloads Sub OnLoad(sender As Object, e As EventArgs) Handles Me.Load
 
         If ot.RequireAccess(accessRequest:=otAccessRight.ReadOnly) Then
+
+            If CurrentSession.IsRunning Then
+                'Me.DomainComboMenu.ToolTipText = tooltiptext
+                Dim i, ind As Integer
+                For Each aDomain As Commons.Domain In Commons.Domain.All
+                    Dim aRadItem As New Telerik.WinControls.UI.RadListDataItem()
+                    aRadItem.Text = aDomain.ID
+                    aRadItem.Tag = aDomain
+                    Me.DomainComboMenu.ComboBoxElement.Items.Add(aRadItem)
+                    If aDomain.ID = CurrentSession.CurrentDomainID Then ind = i
+                    i += 1
+                Next
+                Me.DomainComboMenu.AutoSize = True
+                Me.DomainComboMenu.ComboBoxElement.DropDownStyle = RadDropDownStyle.DropDownList
+                Me.DomainComboMenu.ComboBoxElement.SelectedIndex = ind
+
+                AddHandler Me.DomainComboMenu.ComboBoxElement.SelectedIndexChanged, AddressOf UIFormDBExplorer_DomainButtonClick
+            Else
+                'Me.DomainComboMenu.Visible = False
+                Me.DomainComboMenu.Enabled = False
+
+            End If
+
+            ''' build the tree
             BuildTree()
 
             With ObjectTree
@@ -203,6 +233,50 @@ Public Class UIFormDBExplorer
 
     End Sub
 
+    ''' <summary>
+    ''' event handler for domain Changed
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Public Sub UiFormDBExplorer_OnDomainChanged(sender As Object, e As SessionEventArgs) Handles _otdbsession.OnDomainChanged
+        Dim i, ind As Integer
+        For Each item In DomainComboMenu.ComboBoxElement.Items
+            If TryCast(item.Tag, Commons.Domain).ID = CurrentSession.CurrentDomainID Then
+                ind = i
+            End If
+            i += 1
+        Next
+        DomainComboMenu.ComboBoxElement.SelectedIndex = ind
+    End Sub
+    ''' <summary>
+    ''' Click Event of the Domain Selection
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Public Sub UIFormDBExplorer_DomainButtonClick(sender As Object, e As Telerik.WinControls.UI.Data.PositionChangedEventArgs)
+        Dim aNewDomain As Commons.Domain = Me.DomainComboMenu.ComboBoxElement.SelectedItem.Tag
+
+        If aNewDomain IsNot Nothing AndAlso CurrentSession.IsRunning Then
+
+            If aNewDomain.ID.ToUpper <> CurrentSession.CurrentDomainID.ToUpper Then
+
+                DomainComboMenu.ComboBoxElement.ToolTipText = aNewDomain.Description
+                RadMessageBox.SetThemeName(Me.ThemeName)
+                Dim ds As Windows.Forms.DialogResult = _
+                    RadMessageBox.Show(Me, "Are you sure to switch to Domain '" & aNewDomain.ID & "' ?", "Switch Domain ", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
+                If ds = Windows.Forms.DialogResult.Yes Then
+                    _selectedDomainID = aNewDomain.ID
+
+                    CurrentSession.SwitchToDomain(_selectedDomainID)
+
+                End If
+
+            End If
+        End If
+
+    End Sub
     ''' <summary>
     ''' Handler for Screen Tip
     ''' </summary>
@@ -237,7 +311,7 @@ Public Class UIFormDBExplorer
     Private Sub ObjectTree_SelectedNodeChanged(ByVal sender As Object, ByVal e As Telerik.WinControls.UI.RadTreeViewEventArgs) Handles ObjectTree.SelectedNodeChanged
         Dim nodeitem As ObjectStructureItem = TryCast(e.Node.DataBoundItem, ObjectStructureItem)
         If nodeitem IsNot Nothing Then
-            Debug.WriteLine("Product: " & e.Node.Text & ", Item ID: " & nodeitem.ID)
+
             Select Case nodeitem.Nodetype
 
                 Case ObjectStructureItem.type.Object
@@ -246,15 +320,18 @@ Public Class UIFormDBExplorer
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
                     Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
                     Dim aObjectdefinition As ObjectDefinition = TryCast(nodeitem.DataItem, ObjectDefinition)
-                    Dim aqry As Global.OnTrack.database.iormQueriedEnumeration = aObjectdefinition.GetQuery(ormDataObject.constQRYAll)
+                    Dim aqry As Global.OnTrack.Database.iormQueriedEnumeration = aObjectdefinition.GetQuery(ormDataObject.ConstQRYAll)
                     Dim aModeltable As ormModelTable = New ormModelTable(aqry)
-                  
+                    Me.PageData.Controls.Add(Me.DataGrid)
                     With TryCast(Me.DataGrid, UIControlDataGridView)
                         .DataSource = aModeltable
                         .ThemeName = "TelerikMetroBlue"
                         .AutoSizeColumnsMode = True
                         .Status = Me.StatusLabel
+                        .Dock = System.Windows.Forms.DockStyle.Fill
                     End With
+
+
                 Case Else
                     Me.PageData.Enabled = False
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
@@ -329,8 +406,11 @@ Public Class UIFormDBExplorer
         End If
     End Sub
 
+    Public Sub uiformDBExplorer_CloseClicked(sender As Object, e As EventArgs) Handles RadCloseButton.Click
+        Me.Dispose()
+    End Sub
 
-    Private Sub RadCloseButton_Click(sender As Object, e As EventArgs) Handles RadCloseButton.Click
-        Me.Close()
+    Private Sub RadPageView_SelectedPageChanged(sender As Object, e As RadPageViewCancelEventArgs) Handles RadPageView.PageRemoving
+        e.Cancel = True
     End Sub
 End Class

@@ -190,7 +190,7 @@ Namespace Global.OnTrack.UI
 
             If _statuslabel Is Nothing Then Exit Sub
 
-            _statuslabel.Text = Date.Now.ToLocalTime & " : " & message
+            _statuslabel.Text = Date.Now & " : " & message
             Me.Refresh()
         End Sub
         ''' <summary>
@@ -375,6 +375,8 @@ Namespace Global.OnTrack.UI
                 e.Cancel = True
             End If
         End Sub
+
+      
     End Class
 End Namespace
 
