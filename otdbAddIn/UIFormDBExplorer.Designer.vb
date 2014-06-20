@@ -40,11 +40,12 @@ Partial Class UIFormDBExplorer
         Me.RadMenu1 = New Telerik.WinControls.UI.RadMenu()
         Me.RefreshTableButton = New Telerik.WinControls.UI.RadMenuItem()
         Me.Menu = New Telerik.WinControls.UI.RadMenu()
-        Me.RefreshTreeButton = New Telerik.WinControls.UI.RadMenuItem()
         Me.DomainComboMenu = New Telerik.WinControls.UI.RadMenuComboItem()
+        Me.RefreshMenu = New Telerik.WinControls.UI.RadMenuItem()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.RadMenuItem1 = New Telerik.WinControls.UI.RadMenuItem()
         Me.RadMenuItem2 = New Telerik.WinControls.UI.RadMenuItem()
+        Me.RadOffice2007ScreenTipElement1 = New Telerik.WinControls.UI.RadOffice2007ScreenTipElement()
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadSplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.RadSplitContainer1.SuspendLayout()
@@ -211,7 +212,7 @@ Partial Class UIFormDBExplorer
         '
         'Menu
         '
-        Me.Menu.Items.AddRange(New Telerik.WinControls.RadItem() {Me.RefreshTreeButton, Me.DomainComboMenu})
+        Me.Menu.Items.AddRange(New Telerik.WinControls.RadItem() {Me.DomainComboMenu, Me.RefreshMenu})
         Me.Menu.Location = New System.Drawing.Point(0, 0)
         Me.Menu.Name = "Menu"
         Me.Menu.Padding = New System.Windows.Forms.Padding(2, 2, 0, 0)
@@ -219,21 +220,11 @@ Partial Class UIFormDBExplorer
         Me.Menu.TabIndex = 0
         Me.Menu.ThemeName = "TelerikMetroBlue"
         '
-        'RefreshTreeButton
-        '
-        Me.RefreshTreeButton.AccessibleDescription = "Refresh"
-        Me.RefreshTreeButton.AccessibleName = "Refresh"
-        Me.RefreshTreeButton.Image = Global.OnTrack.AddIn.My.Resources.Resources.playback_reload
-        Me.RefreshTreeButton.Name = "RefreshTreeButton"
-        Me.RefreshTreeButton.Text = "Refresh"
-        Me.RefreshTreeButton.Visibility = Telerik.WinControls.ElementVisibility.Hidden
-        CType(Me.RefreshTreeButton.GetChildAt(2), Telerik.WinControls.UI.RadMenuItemLayout).ScaleTransform = New System.Drawing.SizeF(1.0!, 1.0!)
-        CType(Me.RefreshTreeButton.GetChildAt(2).GetChildAt(0), Telerik.WinControls.UI.MenuImageAndTextLayout).ScaleTransform = New System.Drawing.SizeF(0.5!, 0.5!)
-        '
         'DomainComboMenu
         '
         Me.DomainComboMenu.AccessibleDescription = "Domain"
         Me.DomainComboMenu.AccessibleName = "Domain"
+        Me.DomainComboMenu.AutoToolTip = True
         '
         '
         '
@@ -276,6 +267,17 @@ Partial Class UIFormDBExplorer
         Me.DomainComboMenu.ToolTipText = "Set the Current Domain"
         Me.DomainComboMenu.Visibility = Telerik.WinControls.ElementVisibility.Visible
         '
+        'RefreshMenu
+        '
+        Me.RefreshMenu.AccessibleDescription = "Refresh"
+        Me.RefreshMenu.AccessibleName = "Refresh"
+        Me.RefreshMenu.Image = Global.OnTrack.AddIn.My.Resources.Resources.playback_reload
+        Me.RefreshMenu.Name = "RefreshMenu"
+        Me.RefreshMenu.Text = "Refresh"
+        Me.RefreshMenu.Visibility = Telerik.WinControls.ElementVisibility.Visible
+        CType(Me.RefreshMenu.GetChildAt(2), Telerik.WinControls.UI.RadMenuItemLayout).ScaleTransform = New System.Drawing.SizeF(1.0!, 1.0!)
+        CType(Me.RefreshMenu.GetChildAt(2).GetChildAt(0), Telerik.WinControls.UI.MenuImageAndTextLayout).ScaleTransform = New System.Drawing.SizeF(0.5!, 0.5!)
+        '
         'ContextMenuStrip1
         '
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
@@ -296,6 +298,15 @@ Partial Class UIFormDBExplorer
         Me.RadMenuItem2.Name = "RadMenuItem2"
         Me.RadMenuItem2.Text = "RadMenuItem2"
         Me.RadMenuItem2.Visibility = Telerik.WinControls.ElementVisibility.Visible
+        '
+        'RadOffice2007ScreenTipElement1
+        '
+        Me.RadOffice2007ScreenTipElement1.Description = "Override this property and provide custom screentip template description in Desig" & _
+    "nTime."
+        Me.RadOffice2007ScreenTipElement1.Name = "RadOffice2007ScreenTipElement1"
+        Me.RadOffice2007ScreenTipElement1.TemplateType = Nothing
+        Me.RadOffice2007ScreenTipElement1.TipSize = New System.Drawing.Size(210, 50)
+        Me.RadOffice2007ScreenTipElement1.Visibility = Telerik.WinControls.ElementVisibility.Visible
         '
         'UIFormDBExplorer
         '
@@ -342,7 +353,7 @@ Partial Class UIFormDBExplorer
     Friend WithEvents SplitPanel1 As Telerik.WinControls.UI.SplitPanel
     Friend WithEvents SplitPanel2 As Telerik.WinControls.UI.SplitPanel
     Friend WithEvents ObjectTree As Telerik.WinControls.UI.RadTreeView
-    Friend WithEvents RefreshTreeButton As Telerik.WinControls.UI.RadMenuItem
+    Friend WithEvents RefreshMenu As Telerik.WinControls.UI.RadMenuItem
     Friend WithEvents Menu As Telerik.WinControls.UI.RadMenu
     Friend WithEvents RadPageView As Telerik.WinControls.UI.RadPageView
     Friend WithEvents PageObjectProperties As Telerik.WinControls.UI.RadPageViewPage
@@ -356,5 +367,6 @@ Partial Class UIFormDBExplorer
     Friend WithEvents DomainComboMenu As Telerik.WinControls.UI.RadMenuComboItem
     Friend WithEvents RadMenuItem1 As Telerik.WinControls.UI.RadMenuItem
     Friend WithEvents RadMenuItem2 As Telerik.WinControls.UI.RadMenuItem
+    Friend WithEvents RadOffice2007ScreenTipElement1 As Telerik.WinControls.UI.RadOffice2007ScreenTipElement
 End Class
 

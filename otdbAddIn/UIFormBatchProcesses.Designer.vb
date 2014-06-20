@@ -44,9 +44,7 @@ Partial Class UIFormBatchProcesses
         '
         'StatusStrip
         '
-        Me.StatusStrip.AutoSize = True
         Me.StatusStrip.Items.AddRange(New Telerik.WinControls.RadItem() {Me.StatusLabel, Me.CancelButton, Me.StatusProgress})
-        Me.StatusStrip.LayoutStyle = Telerik.WinControls.UI.RadStatusBarLayoutStyle.Stack
         Me.StatusStrip.Location = New System.Drawing.Point(0, 176)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.Size = New System.Drawing.Size(464, 27)
@@ -96,7 +94,6 @@ Partial Class UIFormBatchProcesses
         Me.RadPanorama1.Items.AddRange(New Telerik.WinControls.RadItem() {Me.RadTileElement1})
         Me.RadPanorama1.Location = New System.Drawing.Point(0, 0)
         Me.RadPanorama1.Name = "RadPanorama1"
-        Me.RadPanorama1.PanelImage = CType(resources.GetObject("RadPanorama1.PanelImage"), System.Drawing.Image)
         Me.RadPanorama1.RowsCount = 2
         Me.RadPanorama1.ShowGroups = True
         Me.RadPanorama1.Size = New System.Drawing.Size(464, 176)
@@ -140,6 +137,7 @@ Partial Class UIFormBatchProcesses
         '
         Me.buildDependNet.AccessibleDescription = "RadTileElement3"
         Me.buildDependNet.AccessibleName = "RadTileElement3"
+        Me.buildDependNet.Enabled = False
         Me.buildDependNet.Name = "buildDependNet"
         Me.buildDependNet.Text = "Build Net"
         Me.buildDependNet.TextWrap = True
@@ -151,6 +149,7 @@ Partial Class UIFormBatchProcesses
         Me.BuildCluster.AccessibleDescription = "Build Cluster"
         Me.BuildCluster.AccessibleName = "Build Cluster"
         Me.BuildCluster.Column = 1
+        Me.BuildCluster.Enabled = False
         Me.BuildCluster.Name = "BuildCluster"
         Me.BuildCluster.Text = "Build Cluster"
         Me.BuildCluster.TextWrap = True
@@ -161,6 +160,7 @@ Partial Class UIFormBatchProcesses
         Me.CheckDepend.AccessibleDescription = "Check Net"
         Me.CheckDepend.AccessibleName = "Check Net"
         Me.CheckDepend.Column = 2
+        Me.CheckDepend.Enabled = False
         Me.CheckDepend.Name = "CheckDepend"
         Me.CheckDepend.Text = "Check Net"
         Me.CheckDepend.TextWrap = True

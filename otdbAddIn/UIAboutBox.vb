@@ -108,5 +108,8 @@ Partial Public Class UIAboutBox
         Me.Dispose()
     End Sub
 
+    Private Sub UIAboutBox_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
 End Class
 

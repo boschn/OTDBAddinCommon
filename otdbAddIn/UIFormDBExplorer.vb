@@ -208,7 +208,8 @@ Public Class UIFormDBExplorer
                 Me.DomainComboMenu.AutoSize = True
                 Me.DomainComboMenu.ComboBoxElement.DropDownStyle = RadDropDownStyle.DropDownList
                 Me.DomainComboMenu.ComboBoxElement.SelectedIndex = ind
-
+                Me.DomainComboMenu.ToolTipText = "Switch to another domain"
+                Me.DomainComboMenu.ComboBoxElement.ToolTipText = "Switch to another domain"
                 AddHandler Me.DomainComboMenu.ComboBoxElement.SelectedIndexChanged, AddressOf UIFormDBExplorer_DomainButtonClick
             Else
                 'Me.DomainComboMenu.Visible = False
@@ -320,9 +321,50 @@ Public Class UIFormDBExplorer
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
                     Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
                     Dim aObjectdefinition As ObjectDefinition = TryCast(nodeitem.DataItem, ObjectDefinition)
+
+
+                    ''' set the Operation menuItems
+                    '''
+                    Dim aClassdescription As ObjectClassDescription = ot.GetObjectClassDescriptionByID(id:=aObjectdefinition.ID)
+                    If aClassdescription IsNot Nothing Then
+                        Dim aList As New List(Of ormObjectOperationMethodAttribute)
+                        For Each anOperation In aClassdescription.OperationAttributes
+                            If anOperation.HasValueUIVisible AndAlso anOperation.UIVisible Then aList.Add(anOperation)
+                        Next
+
+                        Dim aTag As ormObjectOperationMethodAttribute
+                        For Each aRadItem In Me.Menu.Items
+                            aTag = TryCast(aRadItem.Tag, ormObjectOperationMethodAttribute)
+                            If aTag IsNot Nothing Then
+                                If aTag.ClassDescription.ObjectAttribute.ID <> aObjectdefinition.ID Then
+                                    aRadItem.Visibility = ElementVisibility.Collapsed
+                                Else
+                                    '** remove from list if contained
+                                    Dim anOperation As ormObjectOperationMethodAttribute = aList.Where(Function(x) x.TransactionID = aTag.TransactionID).FirstOrDefault
+                                    If anOperation IsNot Nothing Then
+                                        aList.Remove(anOperation)
+                                        aRadItem.Visibility = ElementVisibility.Visible
+                                        aRadItem.Enabled = True
+                                    End If
+                                End If
+                            End If
+                        Next
+
+                        For Each anOperation In aList
+                            If anOperation.HasValueTransactionID Then
+                                Dim aRadMenuItem As New RadMenuItem
+                                aRadMenuItem.Text = anOperation.Title
+                                If anOperation.HasValueDescription Then aRadMenuItem.ToolTipText = anOperation.Description
+                                aRadMenuItem.Tag = anOperation
+                                AddHandler aRadMenuItem.Click, AddressOf Me.UIFormDBExplorer_OperationMenuOnClick
+                                Me.Menu.Items.Add(aRadMenuItem)
+                            End If
+                        Next
+                    End If
+                    Me.Refresh()
+
                     Dim aqry As Global.OnTrack.Database.iormQueriedEnumeration = aObjectdefinition.GetQuery(ormDataObject.ConstQRYAll)
                     Dim aModeltable As ormModelTable = New ormModelTable(aqry)
-                    Me.PageData.Controls.Add(Me.DataGrid)
                     With TryCast(Me.DataGrid, UIControlDataGridView)
                         .DataSource = aModeltable
                         .ThemeName = "TelerikMetroBlue"
@@ -330,16 +372,96 @@ Public Class UIFormDBExplorer
                         .Status = Me.StatusLabel
                         .Dock = System.Windows.Forms.DockStyle.Fill
                     End With
-
+                    Me.PageData.Controls.Add(Me.DataGrid)
+                    Me.RefreshMenu.Tag = Me.DataGrid
+                    Me.RefreshMenu.Visibility = ElementVisibility.Visible
 
                 Case Else
                     Me.PageData.Enabled = False
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
                     Me.PageObjectProperties.Enabled = False
                     Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
+                    ''' switch off
+                    For Each aRadItem In Me.Menu.Items
+                        Dim aTag As ormObjectOperationMethodAttribute = TryCast(aRadItem.Tag, ormObjectOperationMethodAttribute)
+                        If aTag IsNot Nothing Then
+                            aRadItem.Visibility = ElementVisibility.Collapsed
+                        End If
+                    Next
+
+                    Me.RefreshMenu.Visibility = ElementVisibility.Collapsed
+                    Me.RefreshMenu.Tag = Nothing
             End Select
             Me.Refresh()
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Handler for the Operation Menu Item
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub UIFormDBExplorer_OperationMenuOnClick(sender As Object, e As EventArgs)
+        Dim aDatagrid As UIControlDataGridView
+        Dim aRadMenuItem As RadMenuItem = TryCast(sender, RadMenuItem)
+        If aRadMenuItem IsNot Nothing Then
+            Dim anOperation As ormObjectOperationMethodAttribute = TryCast(aRadMenuItem.Tag, ormObjectOperationMethodAttribute)
+            For Each aControl In Me.PageData.Controls
+                aDatagrid = TryCast(aControl, UIControlDataGridView)
+                If aDatagrid IsNot Nothing Then
+                    Exit For
+                End If
+            Next
+            If aDatagrid IsNot Nothing Then
+                For Each aDataobject As ormDataObject In aDatagrid.SelectedDataObjects
+                    Dim theParameterEntries As String() = anOperation.ParameterEntries
+                    Dim theParameters As Object()
+                    Dim returnValueIndex As Integer
+                    Dim returnValue As Object ' dummy
+                    ReDim theParameters(anOperation.MethodInfo.GetParameters.Count - 1)
+                    ''' set the parameters for the delegate
+                    'For i = 0 To theParameters.GetUpperBound(0)
+                    '    Dim j As Integer = aMethodInfo.GetParameters(i).Position
+                    '    If j >= 0 AndAlso j <= theParameters.GetUpperBound(0) Then
+                    '        Select Case theParameterEntries(j)
+                    '            Case ObjectCompoundEntry.ConstFNEntryName
+                    '                theParameters(j) = entryname
+                    '            Case ObjectCompoundEntry.ConstFNValues
+                    '                theParameters(j) = returnValue
+                    '                returnValueIndex = j
+                    '            Case Domain.ConstFNDomainID
+                    '                theParameters(j) = Me.DomainID
+                    '        End Select
+
+                    '    End If
+                    'Next
+                    RadMessageBox.SetThemeName(Me.ThemeName)
+                    Dim ds As Windows.Forms.DialogResult = _
+                        RadMessageBox.Show(Me, "Are you sure to run operation '" & anOperation.Title & "' - '" & anOperation.Description & "' on " & vbLf _
+                                                & anOperation.ClassDescription.ObjectAttribute.Title & " (" & Converter.Array2StringList(aDataobject.PrimaryKeyValues) & ")" _
+                                           , "Please check ", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
+                    If ds = Windows.Forms.DialogResult.Yes Then
+
+                        Dim aDelegate = anOperation.ClassDescription.GetOperartionCallerDelegate(anOperation.OperationName)
+                        Dim result As Object = aDelegate(aDataobject, theParameters)
+                        If DirectCast(result, Boolean) = True Then
+                            Me.StatusLabel.Text = "operation '" & anOperation.Title & "' run with success"
+                            Return
+                        Else
+                            Me.StatusLabel.Text = "operation '" & anOperation.Title & "' failed to run"
+                            Call CoreMessageHandler(subname:="UIFormDBExplorer.UIFormDBExplorer_operationMenuOnclick", messagetype:=otCoreMessageType.InternalError, _
+                                          message:="operation failed", _
+                                          arg1:=anOperation.OperationName, objectname:=aDataobject.ObjectID)
+                            Return
+                        End If
+                    End If
+
+                Next
+            End If
+
+        End If
+
     End Sub
     '#endregion
 
@@ -406,11 +528,37 @@ Public Class UIFormDBExplorer
         End If
     End Sub
 
+    ''' <summary>
+    ''' Close Button Handler
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Public Sub uiformDBExplorer_CloseClicked(sender As Object, e As EventArgs) Handles RadCloseButton.Click
         Me.Dispose()
     End Sub
 
+    ''' <summary>
+    ''' Handler for selected Page changed
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub RadPageView_SelectedPageChanged(sender As Object, e As RadPageViewCancelEventArgs) Handles RadPageView.PageRemoving
         e.Cancel = True
+    End Sub
+
+    ''' <summary>
+    ''' Click Hander for the RefreshButton
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub RefreshMenu_Click(sender As Object, e As EventArgs) Handles RefreshMenu.Click
+        Dim aDataGrid As UIControlDataGridView = TryCast(Me.DataGrid, UIControlDataGridView)
+        If aDataGrid IsNot Nothing AndAlso aDataGrid.Modeltable IsNot Nothing Then
+            aDataGrid.Modeltable.Load(refresh:=True)
+            aDataGrid.Refresh()
+        End If
     End Sub
 End Class

@@ -71,6 +71,11 @@
     <Reference Include="TelerikCommon, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="TelerikData, Version=2013.3.1016.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Telerik\RadControls for WinForms Q3 2013\Bin40\TelerikData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -304,6 +309,7 @@
     <None Include="Resources\memory_module.png" />
     <None Include="Resources\minus.png" />
     <None Include="Resources\plus.png" />
+    <None Include="Resources\progress_radar.gif" />
     <Content Include="Resources\table.png" />
   </ItemGroup>
   <ItemGroup>

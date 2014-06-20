@@ -33,15 +33,15 @@ Partial Class UIFormSetting
         Me.SaveConfigFileMenuButton = New Telerik.WinControls.UI.RadMenuItem()
         Me.CancelButton = New Telerik.WinControls.UI.RadButtonElement()
         Me.RadPanel1 = New Telerik.WinControls.UI.RadPanel()
+        Me.CreateData = New Telerik.WinControls.UI.RadButton()
         Me.ButtonCreateSchema = New Telerik.WinControls.UI.RadButton()
         Me.RadOffice2007ScreenTipElement1 = New Telerik.WinControls.UI.RadOffice2007ScreenTipElement()
-        Me.CreateData = New Telerik.WinControls.UI.RadButton()
         CType(Me.RadPropertyGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadPanel1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.RadPanel1.SuspendLayout()
-        CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CreateData, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -121,7 +121,6 @@ Partial Class UIFormSetting
         Me.SaveConfigFileMenuButton.AccessibleDescription = "in Config File"
         Me.SaveConfigFileMenuButton.AccessibleName = "in Config File"
         Me.SaveConfigFileMenuButton.DescriptionText = "save configuration in configuration file"
-        Me.SaveConfigFileMenuButton.Enabled = False
         Me.SaveConfigFileMenuButton.Name = "SaveConfigFileMenuButton"
         Me.SaveConfigFileMenuButton.Text = "in Config File"
         Me.SaveConfigFileMenuButton.Visibility = Telerik.WinControls.ElementVisibility.Visible
@@ -145,6 +144,15 @@ Partial Class UIFormSetting
         Me.RadPanel1.Size = New System.Drawing.Size(442, 32)
         Me.RadPanel1.TabIndex = 2
         '
+        'CreateData
+        '
+        Me.CreateData.Location = New System.Drawing.Point(106, 5)
+        Me.CreateData.Name = "CreateData"
+        Me.CreateData.Size = New System.Drawing.Size(110, 24)
+        Me.CreateData.TabIndex = 1
+        Me.CreateData.Text = "CreateData"
+        Me.CreateData.ThemeName = "TelerikMetroBlue"
+        '
         'ButtonCreateSchema
         '
         Me.ButtonCreateSchema.Location = New System.Drawing.Point(3, 5)
@@ -162,15 +170,6 @@ Partial Class UIFormSetting
         Me.RadOffice2007ScreenTipElement1.TemplateType = Nothing
         Me.RadOffice2007ScreenTipElement1.TipSize = New System.Drawing.Size(210, 50)
         Me.RadOffice2007ScreenTipElement1.Visibility = Telerik.WinControls.ElementVisibility.Visible
-        '
-        'CreateData
-        '
-        Me.CreateData.Location = New System.Drawing.Point(106, 5)
-        Me.CreateData.Name = "CreateData"
-        Me.CreateData.Size = New System.Drawing.Size(110, 24)
-        Me.CreateData.TabIndex = 1
-        Me.CreateData.Text = "CreateData"
-        Me.CreateData.ThemeName = "TelerikMetroBlue"
         '
         'UIFormSetting
         '
@@ -195,8 +194,8 @@ Partial Class UIFormSetting
         CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.RadPanel1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.RadPanel1.ResumeLayout(False)
-        CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.CreateData, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()

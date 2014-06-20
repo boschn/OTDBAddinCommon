@@ -11,7 +11,55 @@ Namespace Global.OnTrack.UI
 
         Private WithEvents _modeltable As ormModelTable
         Private WithEvents _statuslabel As RadLabelElement
+        Private WithEvents _ProgressPictureBox As System.Windows.Forms.PictureBox
+        ''' <summary>
+        ''' Gets or sets the progress picture box.
+        ''' </summary>
+        ''' <value>The progress picture box.</value>
+        Public ReadOnly Property ProgressPictureBox() As PictureBox
+            Get
+                If _ProgressPictureBox Is Nothing Then
+                    '
+                    'ProgressPictureBox
+                    '
+                    _ProgressPictureBox = New System.Windows.Forms.PictureBox
+                    CType(Me._ProgressPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
+                    With _ProgressPictureBox
 
+                        .Enabled = False
+                        .Dock = System.Windows.Forms.DockStyle.Fill
+                        .Image = Global.OnTrack.AddIn.My.Resources.Resources.progress_radar
+                        '.Location = New System.Drawing.Point(0, 0)
+                        .Name = "ProgressPictureBox"
+                        .Size = Me.Size
+                        .SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage
+                        .TabIndex = 0
+                        .TabStop = False
+                    End With
+                    CType(Me._ProgressPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
+                End If
+                If Me.Controls.Count = 0 Then Me.Controls.Add(_ProgressPictureBox)
+                Return Me._ProgressPictureBox
+            End Get
+           
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the selected data object.
+        ''' </summary>
+        ''' <value>The selected data object.</value>
+        Public ReadOnly Property SelectedDataObjects As IList(Of ormDataObject)
+            Get
+                Dim alist As New List(Of ormDataObject)
+                If Me.SelectionMode = GridViewSelectionMode.FullRowSelect Then
+                    For Each aRow In Me.SelectedRows
+                        alist.Add(Me.Modeltable.DataObject(aRow.Index))
+                    Next
+                End If
+                Return aList
+            End Get
+
+        End Property
 
         ''' <summary>
         ''' Gets or sets the status.
@@ -38,6 +86,10 @@ Namespace Global.OnTrack.UI
                 Me._modeltable = value
             End Set
         End Property
+
+        Private Sub UIControlDataGridView_SelectionChanged(sender As Object, e As System.EventArgs) Handles Me.SelectionChanged
+
+        End Sub
 
         ''' <summary>
         ''' Event On Row Adding
@@ -220,6 +272,8 @@ Namespace Global.OnTrack.UI
                 e.Cancel = True
             End If
         End Sub
+
+
         ''' <summary>
         ''' Handles the Initialize Event
         ''' </summary>
@@ -242,6 +296,8 @@ Namespace Global.OnTrack.UI
             Me.MasterTemplate.EnableFiltering = True
             Me.EnableGrouping = False
             Me.EnableSorting = True
+
+
         End Sub
         ''' <summary>
         ''' Handles the OnContextMenuOpening Event to add or delete context sensitive Events
@@ -254,6 +310,8 @@ Namespace Global.OnTrack.UI
             ''' Add the Layout Save if we are connected
             ''' 
             If CurrentSession.IsRunning Then
+
+                ''' *** save the Format of the data grid
                 Dim separator As RadMenuSeparatorItem = New RadMenuSeparatorItem()
                 e.ContextMenu.Items.Add(separator)
                 Dim menuItem1 As New RadMenuItem("Save UI Layout")
@@ -340,14 +398,22 @@ Namespace Global.OnTrack.UI
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         ''' <remarks></remarks>
-        Public Sub OnDatabindingComplete(sender As Object, e As GridViewBindingCompleteEventArgs) Handles Me.DataBindingComplete
+        Public Sub UIConTrolDataGrid_OnDatabindingComplete(sender As Object, e As GridViewBindingCompleteEventArgs) Handles Me.DataBindingComplete
             If Me.DataSource IsNot Nothing Then
                 If Me.DataSource.GetType.Equals(GetType(ormModelTable)) Then
+                    Me.ProgressPictureBox.Enabled = True
+
+                    Me.Refresh()
+
                     _modeltable = TryCast(Me.DataSource, ormModelTable)
                     Dim awatch As New Stopwatch
                     awatch.Start()
                     _modeltable.Load()
                     awatch.Stop()
+
+                    Me.Controls.Clear()
+                    Me.Refresh()
+
                     '' try to load the UI Layout
                     Call LoadUILayout(Me, New EventArgs())
                     '' status label
@@ -360,7 +426,32 @@ Namespace Global.OnTrack.UI
                 End If
             End If
         End Sub
+        ''' <summary>
+        ''' EdtorRequired Event Handler
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Private Sub UICOntrolDataGridView_EditorRequired(sender As Object, e As EditorRequiredEventArgs) Handles Me.EditorRequired
 
+            Dim anObjectEntry = Me.Modeltable.GetObjectEntry(Me.CurrentColumn.FieldName)
+            'Dim [date] As DateTime
+            'If DateTime.TryParse(Me.CurrentCell.Value.ToString(), [date]) Then
+            '    e.EditorType = GetType(RadDateTimeEditor)
+            '    Return
+            'End If
+
+            'Dim i As Integer = 0
+            'If Integer.TryParse(Me.CurrentCell.Value.ToString(), i) Then
+            '    e.EditorType = GetType(GridSpinEditor)
+            '    Return
+            'End If
+
+            'If TypeOf Me.CurrentCell.Value Is String Then
+            '    e.EditorType = GetType(RadTextBoxEditor)
+            '    Return
+            'End If
+        End Sub
         ''' <summary>
         ''' event handler to check on Right to Change Object
         ''' </summary>

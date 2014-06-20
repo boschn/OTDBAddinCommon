@@ -101,6 +101,23 @@ Public Class UIFormSetting
         Private _driver As Database.otDbDriverType = 0
         Private _ConnectionString As String = ""
         Private _logagent As Boolean = False
+        Private _usemars As Boolean = True
+
+        ''' <summary>
+        ''' Gets or sets the usemars.
+        ''' </summary>
+        ''' <value>The usemars.</value>
+        '''  
+        <DisplayName("Use MARS (Sql-Server)")> _
+        <Category("Database")> <Browsable(True)> _
+        Public Property Usemars() As Boolean
+            Get
+                Return Me._usemars
+            End Get
+            Set(value As Boolean)
+                Me._usemars = value
+            End Set
+        End Property
 
         ''' <summary>
         ''' Gets or sets the logagent.
@@ -256,7 +273,7 @@ Public Class UIFormSetting
         End Property
 
         Public Overrides Function toString() As String
-            Return String.Format("{0}:({1}/{2},{3},{4},{5})", _configsetName, _type.ToString, _name, _path, _dbuser, _configsetName, _sequence.ToString)
+            Return String.Format("{0}:({1}/{2},{3},{4},{5},{6},{7})", _configsetName, _type.ToString, _name, _path, _dbuser, _configsetName, _sequence.ToString, _usemars.ToString)
         End Function
     End Class
 
@@ -503,6 +520,7 @@ Public Class UIFormSetting
                         .ConnectionString = GetConfigProperty(ConstCPNDBConnection, configsetname:=aConfigSetName, sequence:=aSequence)
                         .DatabaseDriver = GetConfigProperty(ConstCPNDriverName, configsetname:=aConfigSetName, sequence:=aSequence)
                         .Logagent = GetConfigProperty(constCPNUseLogAgent, configsetname:=aConfigSetName, sequence:=aSequence)
+                        .Usemars = GetConfigProperty(ConstCPNDBSQLServerUseMars, configsetname:=aConfigSetName, sequence:=aSequence)
                     End With
 
                     aPropertyName = "&" & i & ConstDelimiter & "ConfigurationSet" & ConstDelimiter & aSequence.ToString
@@ -523,9 +541,6 @@ Public Class UIFormSetting
                     configset.Value = aConfigSetModel
                     configset.Description = GetConfigProperty(ConstCPNDescription, configsetname:=aConfigSetName)
                     configset.Label = "DB Configuration #" & i & ":" & aSequence.ToString
-
-
-
                 End If
             Next
             i += 1 ' next configuration (primary & secondary belong together)
@@ -780,7 +795,123 @@ Public Class UIFormSetting
     ''' <remarks></remarks>
 
     Private Sub SaveInConfigFileButton_Click(sender As Object, e As EventArgs) Handles SaveConfigFileMenuButton.Click
+        Try
+            Dim configfilename_prop As PropertyStoreItem = _propertyStore.Item(constConfigFileName)
+            If configfilename_prop Is Nothing Then configfilename_prop = New PropertyStoreItem(GetType(String), constConfigFileName, ConstDefaultConfigFileName)
+            Dim configfilelocation_prop As PropertyStoreItem = _propertyStore.Item(constConfigFileLocation)
+            'If configfilelocation IsNot Nothing Then ot.AddConfigFilePath(configfilelocation.Value)
+            Dim configfilefullname As String = String.Empty
 
+            ''' check if there is a file
+            ''' 
+            ' check the configfilepath first
+            If Not String.IsNullOrWhiteSpace(configfilelocation_prop.Value) Then
+                If Mid(configfilelocation_prop.Value, Len(configfilelocation_prop.Value), 1) <> "\" Then configfilelocation_prop.Value = configfilelocation_prop.Value & "\"
+
+                If Directory.Exists(configfilelocation_prop.Value) Then
+                    If File.Exists(configfilelocation_prop.Value & configfilename_prop.Value) Then
+                        ''' check name of backup
+                        Dim i As UInt16
+                        For i = 1 To UInt16.MaxValue
+                            configfilefullname = configfilelocation_prop.Value & configfilename_prop.Value & "." & Strings.Format(i, "00000")
+                            If Not File.Exists(configfilefullname) Then Exit For
+                        Next
+                        File.Copy(configfilelocation_prop.Value & configfilename_prop.Value, configfilefullname)
+                        If Not File.Exists(configfilefullname) Then
+                            ot.CoreMessageHandler(message:="Unable to save copy '" & configfilefullname & "' of config file '" & configfilename_prop.Value & "' !" & vbLf & _
+                                         "Sure you have rights for the path ?!", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, subname:="UIFormSetting.SaveInSession")
+                            Return
+                        End If
+
+                    End If
+                    '' set to the new name
+                    configfilefullname = configfilelocation_prop.Value & configfilename_prop.Value
+                Else
+                    ot.CoreMessageHandler(message:="Path '" & configfilelocation_prop.Value & "' to save config file '" & configfilename_prop.Value & "' doesnot exists !" & vbLf & _
+                                          "Please provide a valid file path", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, subname:="UIFormSetting.SaveInSession")
+                    Return
+                End If
+
+            End If
+
+
+            ''' start to write
+            ''' 
+            Dim aWriter = New StreamWriter(configfilefullname, append:=False)
+
+            aWriter.WriteLine("; OnTrack Database Tooling Config File")
+            aWriter.WriteLine("; (C) by sfk engineering services UG 2014")
+            aWriter.WriteLine(";")
+            aWriter.WriteLine("; assembly name:" & My.Application.Info.AssemblyName & " version:" & My.Application.Info.Version.ToString)
+            aWriter.WriteLine("; in directory path:" & My.Application.Info.DirectoryPath)
+            aWriter.WriteLine(";")
+            aWriter.WriteLine("; saved config file from user '" & Environment.UserName & "' on " & Converter.DateTime2UniversalDateTimeString(DateTime.Now))
+            aWriter.WriteLine(";")
+
+
+            ''' get the global setting
+            Dim currentconfigsetname As PropertyStoreItem = _propertyStore.Item(constConfigurationName)
+
+            Dim currentdescription As PropertyStoreItem = _propertyStore.Item(constConfigDescription)
+            If currentconfigsetname IsNot Nothing AndAlso currentconfigsetname.Value IsNot Nothing Then
+                aWriter.WriteLine(";  global settings ")
+                aWriter.WriteLine(ConstCPNUseConfigSetName & "=" & currentconfigsetname.Value)
+                aWriter.WriteLine(constCPNDefaultDomainid & "=" & ConstGlobalDomain)
+            End If
+
+            '** save all sets
+            Dim aSequence As ComplexPropertyStore.Sequence
+            For Each aProperty In _propertyStore
+                '' extract
+                Dim aValue As String = aProperty.PropertyName
+                If aValue.Split(ConstDelimiter).Length >= 2 Then
+                    Dim aName As String = aValue.Split(ConstDelimiter).ElementAt(1)
+                    If LCase(aName) = "configurationset" Then
+                        Dim aConfigSetModel As ConfigSetModel = TryCast(aProperty.Value, ConfigSetModel)
+                        If aConfigSetModel IsNot Nothing Then
+                            aSequence = aConfigSetModel.Sequence
+                            aWriter.WriteLine("; CONFIGSET " & aConfigSetModel.ConfigSetname)
+                            With aConfigSetModel
+                                If .ConfigSetname = ConstGlobalConfigSetName Then
+                                    aWriter.WriteLine(";  global set ")
+                                    aWriter.WriteLine(ConstCPNUseConfigSetName & "=" & currentconfigsetname.Value)
+                                    aWriter.WriteLine(constCPNDefaultDomainid & "=" & ConstGlobalDomain)
+                                Else
+                                    aWriter.WriteLine("[" & .ConfigSetname & ":" & .Sequence.ToString & "]")
+                                End If
+
+                                ''' save properties
+                                If Not String.IsNullOrWhiteSpace(.Database) Then aWriter.WriteLine(ConstCPNDBName & "=" & .Database)
+                                If .DatabaseType <> 0 Then aWriter.WriteLine(ConstCPNDBType & "=" & .DatabaseType.ToString)
+                                If Not String.IsNullOrWhiteSpace(.DbUser) Then aWriter.WriteLine(ConstCPNDBUser & "=" & .DbUser)
+                                If Not String.IsNullOrWhiteSpace(.DbUserPassword) Then aWriter.WriteLine(ConstCPNDBPassword & "=" & .DbUserPassword)
+                                If Not String.IsNullOrWhiteSpace(.ConfigSetNDescription) Then aWriter.WriteLine(ConstCPNDescription & "=" & .ConfigSetNDescription)
+                                If .DatabaseDriver <> 0 Then aWriter.WriteLine(ConstCPNDriverName & "=" & .DatabaseDriver.ToString)
+                                If Not String.IsNullOrWhiteSpace(.ConnectionString) Then aWriter.WriteLine(ConstCPNDBConnection & "=" & .ConnectionString)
+                                If Not String.IsNullOrWhiteSpace(.DBPath) Then aWriter.WriteLine(ConstCPNDBPath & "=" & .DBPath)
+                                aWriter.WriteLine(constCPNUseLogAgent & "=" & .Logagent.ToString)
+                                aWriter.WriteLine(ConstCPNDBSQLServerUseMars & "=" & .Usemars.ToString)
+
+                            End With
+
+                        End If
+
+                    End If
+                End If
+            Next
+
+            aWriter.Flush()
+            aWriter.Close()
+
+            ot.CoreMessageHandler(message:="OnTrack configuration properties saved in config file " & configfilefullname & vbLf _
+                                  & "Restart Office or Add-In to use them", showmsgbox:=True, messagetype:=otCoreMessageType.ApplicationInfo, _
+                                   subname:="UIFormSetting.SaveConfigFile")
+            isChanged = False
+            Me.Refresh()
+            Me.Close()
+        Catch ex As Exception
+            ot.CoreMessageHandler(exception:=ex, subname:="UIFormSetting.SaveConfigFile", showmsgbox:=True)
+        End Try
     End Sub
     ''' <summary>
     ''' handles the Form OnLoad Event
