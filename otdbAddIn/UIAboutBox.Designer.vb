@@ -68,7 +68,7 @@ Partial Public Class UIAboutBox
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.tableLayoutPanel.Size = New System.Drawing.Size(559, 257)
+        Me.tableLayoutPanel.Size = New System.Drawing.Size(559, 262)
         Me.tableLayoutPanel.TabIndex = 0
         '
         'logoPictureBox
@@ -78,7 +78,7 @@ Partial Public Class UIAboutBox
         Me.logoPictureBox.Location = New System.Drawing.Point(3, 3)
         Me.logoPictureBox.Name = "logoPictureBox"
         Me.tableLayoutPanel.SetRowSpan(Me.logoPictureBox, 6)
-        Me.logoPictureBox.Size = New System.Drawing.Size(178, 251)
+        Me.logoPictureBox.Size = New System.Drawing.Size(178, 256)
         Me.logoPictureBox.TabIndex = 12
         Me.logoPictureBox.TabStop = False
         '
@@ -101,7 +101,7 @@ Partial Public Class UIAboutBox
         'radLabelVersion
         '
         Me.radLabelVersion.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelVersion.Location = New System.Drawing.Point(190, 25)
+        Me.radLabelVersion.Location = New System.Drawing.Point(190, 26)
         Me.radLabelVersion.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelVersion.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelVersion.Name = "radLabelVersion"
@@ -117,7 +117,7 @@ Partial Public Class UIAboutBox
         'radLabelCopyright
         '
         Me.radLabelCopyright.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelCopyright.Location = New System.Drawing.Point(190, 50)
+        Me.radLabelCopyright.Location = New System.Drawing.Point(190, 52)
         Me.radLabelCopyright.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelCopyright.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelCopyright.Name = "radLabelCopyright"
@@ -133,7 +133,7 @@ Partial Public Class UIAboutBox
         'radLabelCompanyName
         '
         Me.radLabelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelCompanyName.Location = New System.Drawing.Point(190, 75)
+        Me.radLabelCompanyName.Location = New System.Drawing.Point(190, 78)
         Me.radLabelCompanyName.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelCompanyName.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelCompanyName.Name = "radLabelCompanyName"
@@ -150,13 +150,13 @@ Partial Public Class UIAboutBox
         '
         Me.radTextBoxDescription.AutoSize = False
         Me.radTextBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radTextBoxDescription.Location = New System.Drawing.Point(190, 103)
+        Me.radTextBoxDescription.Location = New System.Drawing.Point(190, 107)
         Me.radTextBoxDescription.Margin = New System.Windows.Forms.Padding(6, 3, 3, 3)
         Me.radTextBoxDescription.Multiline = True
         Me.radTextBoxDescription.Name = "radTextBoxDescription"
         Me.radTextBoxDescription.ReadOnly = True
         Me.radTextBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.radTextBoxDescription.Size = New System.Drawing.Size(366, 122)
+        Me.radTextBoxDescription.Size = New System.Drawing.Size(366, 125)
         Me.radTextBoxDescription.TabIndex = 23
         Me.radTextBoxDescription.TabStop = False
         Me.radTextBoxDescription.Text = "Description"
@@ -166,9 +166,9 @@ Partial Public Class UIAboutBox
         '
         Me.okRadButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.okRadButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.okRadButton.Location = New System.Drawing.Point(481, 232)
+        Me.okRadButton.Location = New System.Drawing.Point(481, 238)
         Me.okRadButton.Name = "okRadButton"
-        Me.okRadButton.Size = New System.Drawing.Size(75, 22)
+        Me.okRadButton.Size = New System.Drawing.Size(75, 21)
         Me.okRadButton.TabIndex = 24
         Me.okRadButton.Text = "&OK"
         Me.okRadButton.ThemeName = "TelerikMetroBlue"
@@ -178,7 +178,7 @@ Partial Public Class UIAboutBox
         Me.AcceptButton = Me.okRadButton
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(577, 275)
+        Me.ClientSize = New System.Drawing.Size(577, 280)
         Me.Controls.Add(Me.tableLayoutPanel)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)

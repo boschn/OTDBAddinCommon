@@ -270,6 +270,12 @@ Public Class UIFormLogin
             Me.Domain = myshadow.Domain
             Me.DomainChangeEnables = myshadow.EnableDomain
             Me.DomainList = myshadow.PossibleDomains
+            If Me.DomainList Is Nothing OrElse Me.DomainList.Count = 0 Then
+                Me.CbDomain.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDown
+            Else
+                Me.CbDomain.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDownList
+            End If
+
             Me.CbDomain.AutoCompleteDataSource = myshadow.PossibleDomains
             Me.CbDomain.AutoCompleteMode = Windows.Forms.AutoCompleteMode.Append
 

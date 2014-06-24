@@ -592,7 +592,7 @@ Public Class UIFormSetting
     Private Sub ButtonCreateSchema_Click(sender As Object, e As EventArgs) Handles ButtonCreateSchema.Click
 
         If ot.RequireAccess(otAccessRight.AlterSchema) Then
-            Global.OnTrack.Database.createDatabase.Run(ot.InstalledModules)
+            Global.OnTrack.Database.Installation.CreateDatabase(ot.InstalledModules)
         Else
             ot.CoreMessageHandler(message:="couldn't acquire the necessary rights to continue this operation", _
                                          messagetype:=otCoreMessageType.ApplicationError, subname:="UIFormSetting.CreateSchemaButton")
@@ -930,8 +930,11 @@ Public Class UIFormSetting
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
-    Private Sub CreateData_Click(sender As Object, e As EventArgs) Handles CreateData.Click
-        If createDatabase.InitializeTestData() Then
+    Private Sub CreateData_Click(sender As Object, e As EventArgs) Handles DropDatabaseButton.Click
+        If ot.CurrentSession.RequestUserAccess(accessRequest:=otAccessRight.AlterSchema, messagetext:="for dropping the database provide an administration id") Then
+
+        End If
+        If Installation.InitializeTestData() Then
             Me.StatusLabel.Text = "test data initialized"
         End If
     End Sub
