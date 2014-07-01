@@ -5,9 +5,12 @@ Imports System.ComponentModel
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports System.Reflection
+Imports Telerik.WinControls.Data
 
 Partial Public Class UIAboutBox
     Inherits Telerik.WinControls.UI.RadForm
+
+    Private _changelog As New Data.DataTable
 
     Public Sub New()
         InitializeComponent()
@@ -22,6 +25,17 @@ Partial Public Class UIAboutBox
         Me.radLabelCopyright.Text = AboutData.CopyRight
         Me.radLabelCompanyName.Text = AboutData.Company
         Me.radTextBoxDescription.Text = AboutData.Description
+
+        ''' Datatable
+        _changelog.Columns.Add(columnName:="Application", type:=GetType(System.String))
+        _changelog.Columns.Add(columnName:="Module", type:=GetType(System.String))
+        _changelog.Columns.Add(columnName:="Version", type:=GetType(System.String))
+        _changelog.Columns.Add(columnName:="No", type:=GetType(System.Int64))
+        _changelog.Columns.Add(columnName:="Description", type:=GetType(System.String))
+        _changelog.Columns.Add(columnName:="Ver", type:=GetType(System.Int64))
+        _changelog.Columns.Add(columnName:="Release", type:=GetType(System.Int64))
+        _changelog.Columns.Add(columnName:="Patch", type:=GetType(System.Int64))
+
     End Sub
 
     ''' <summary>
@@ -31,12 +45,74 @@ Partial Public Class UIAboutBox
     ''' <param name="e"></param>
     ''' <remarks></remarks>
 
-    Private Sub OkRadButton_Click(sender As Object, e As EventArgs) Handles okRadButton.Click
+    Private Sub OkRadButton_Click(sender As Object, e As EventArgs)
         Me.Dispose()
     End Sub
-
+    ''' <summary>
+    ''' On Load
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub UIAboutBox_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        _changelog.Clear()
+
+        For Each anEntry In ot.OnTrackChangeLog
+            Dim aRow As Data.DataRow = _changelog.NewRow()
+            With aRow
+                .Item("Application") = anEntry.Application
+                .Item("Module") = anEntry.Module
+                .Item("Version") = anEntry.Versioning
+                .Item("Description") = anEntry.Description
+                .Item("No") = anEntry.ChangeImplementationNo
+
+                .Item("Ver") = anEntry.Version
+                .Item("Release") = anEntry.Release
+                .Item("Patch") = anEntry.Patch
+
+            End With
+            _changelog.Rows.Add(aRow)
+        Next
+
+
+        Me.GVChangeLog.DataSource = _changelog
+        Me.GVChangeLog.Columns.Item("Ver").IsVisible = False
+        Me.GVChangeLog.Columns.Item("Release").IsVisible = False
+        Me.GVChangeLog.Columns.Item("Patch").IsVisible = False
+        Me.GVChangeLog.BestFitColumns()
+        
+        ''' sorting
+        ''' 
+
+        Me.GVChangeLog.MasterTemplate.EnableSorting = True
+
+        Dim descriptorApplication As New SortDescriptor()
+        descriptorApplication.PropertyName = "Application"
+        descriptorApplication.Direction = ListSortDirection.Ascending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorApplication)
+        Dim descriptorModule As New SortDescriptor()
+        descriptorModule.PropertyName = "Module"
+        descriptorModule.Direction = ListSortDirection.Ascending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorModule)
+        Dim descriptorVer As New SortDescriptor()
+        descriptorVer.PropertyName = "Ver"
+        descriptorVer.Direction = ListSortDirection.Descending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorVer)
+        Dim descriptorRelease As New SortDescriptor()
+        descriptorRelease.PropertyName = "Release"
+        descriptorRelease.Direction = ListSortDirection.Descending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorRelease)
+        Dim descriptorPatch As New SortDescriptor()
+        descriptorPatch.PropertyName = "Patch"
+        descriptorPatch.Direction = ListSortDirection.Descending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorPatch)
+        Dim descriptorNo As New SortDescriptor()
+        descriptorNo.PropertyName = "No"
+        descriptorNo.Direction = ListSortDirection.Descending
+        Me.GVChangeLog.SortDescriptors.Add(descriptorNo)
+
+        Me.PageView.SelectedPage = Me.RadPageViewPage1
     End Sub
 End Class
 
@@ -68,7 +144,7 @@ Public Class AboutData
             Return _ProductName
         End Get
         Set(value As String)
-            _ProductName = Value
+            _ProductName = value
         End Set
     End Property
 
@@ -91,7 +167,7 @@ Public Class AboutData
             Return _Company
         End Get
         Set(value As String)
-            _Company = Value
+            _Company = value
         End Set
     End Property
 
@@ -114,7 +190,7 @@ Public Class AboutData
             Return _CopyRight
         End Get
         Set(value As String)
-            _CopyRight = Value
+            _CopyRight = value
         End Set
     End Property
 
@@ -137,7 +213,7 @@ Public Class AboutData
             Return _Description
         End Get
         Set(value As String)
-            _Description = Value
+            _Description = value
         End Set
     End Property
 

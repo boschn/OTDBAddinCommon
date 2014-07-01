@@ -25,6 +25,9 @@ Partial Public Class UIAboutBox
     ''' </summary>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UIAboutBox))
+        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.PageView = New Telerik.WinControls.UI.RadPageView()
+        Me.RadPageViewPage1 = New Telerik.WinControls.UI.RadPageViewPage()
         Me.tableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.logoPictureBox = New System.Windows.Forms.PictureBox()
         Me.radLabelProductName = New Telerik.WinControls.UI.RadLabel()
@@ -32,8 +35,13 @@ Partial Public Class UIAboutBox
         Me.radLabelCopyright = New Telerik.WinControls.UI.RadLabel()
         Me.radLabelCompanyName = New Telerik.WinControls.UI.RadLabel()
         Me.radTextBoxDescription = New Telerik.WinControls.UI.RadTextBox()
+        Me.RadPageViewPage2 = New Telerik.WinControls.UI.RadPageViewPage()
+        Me.GVChangeLog = New Telerik.WinControls.UI.RadGridView()
         Me.okRadButton = New Telerik.WinControls.UI.RadButton()
-        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.RadStatusStrip1 = New Telerik.WinControls.UI.RadStatusStrip()
+        CType(Me.PageView, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.PageView.SuspendLayout()
+        Me.RadPageViewPage1.SuspendLayout()
         Me.tableLayoutPanel.SuspendLayout()
         CType(Me.logoPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.radLabelProductName, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -41,9 +49,34 @@ Partial Public Class UIAboutBox
         CType(Me.radLabelCopyright, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.radLabelCompanyName, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.radTextBoxDescription, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.RadPageViewPage2.SuspendLayout()
+        CType(Me.GVChangeLog, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.GVChangeLog.MasterTemplate, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.okRadButton, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.RadStatusStrip1.SuspendLayout()
         CType(Me, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
+        '
+        'PageView
+        '
+        Me.PageView.Controls.Add(Me.RadPageViewPage1)
+        Me.PageView.Controls.Add(Me.RadPageViewPage2)
+        Me.PageView.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.PageView.Location = New System.Drawing.Point(9, 9)
+        Me.PageView.Name = "PageView"
+        Me.PageView.SelectedPage = Me.RadPageViewPage2
+        Me.PageView.Size = New System.Drawing.Size(618, 320)
+        Me.PageView.TabIndex = 1
+        Me.PageView.ThemeName = "TelerikMetroBlue"
+        '
+        'RadPageViewPage1
+        '
+        Me.RadPageViewPage1.Controls.Add(Me.tableLayoutPanel)
+        Me.RadPageViewPage1.Location = New System.Drawing.Point(5, 31)
+        Me.RadPageViewPage1.Name = "RadPageViewPage1"
+        Me.RadPageViewPage1.Size = New System.Drawing.Size(608, 284)
+        Me.RadPageViewPage1.Text = "About"
         '
         'tableLayoutPanel
         '
@@ -57,9 +90,8 @@ Partial Public Class UIAboutBox
         Me.tableLayoutPanel.Controls.Add(Me.radLabelCopyright, 1, 2)
         Me.tableLayoutPanel.Controls.Add(Me.radLabelCompanyName, 1, 3)
         Me.tableLayoutPanel.Controls.Add(Me.radTextBoxDescription, 1, 4)
-        Me.tableLayoutPanel.Controls.Add(Me.okRadButton, 1, 5)
         Me.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tableLayoutPanel.Location = New System.Drawing.Point(9, 9)
+        Me.tableLayoutPanel.Location = New System.Drawing.Point(0, 0)
         Me.tableLayoutPanel.Name = "tableLayoutPanel"
         Me.tableLayoutPanel.RowCount = 6
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
@@ -68,8 +100,8 @@ Partial Public Class UIAboutBox
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.tableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
-        Me.tableLayoutPanel.Size = New System.Drawing.Size(559, 262)
-        Me.tableLayoutPanel.TabIndex = 0
+        Me.tableLayoutPanel.Size = New System.Drawing.Size(608, 284)
+        Me.tableLayoutPanel.TabIndex = 1
         '
         'logoPictureBox
         '
@@ -78,14 +110,14 @@ Partial Public Class UIAboutBox
         Me.logoPictureBox.Location = New System.Drawing.Point(3, 3)
         Me.logoPictureBox.Name = "logoPictureBox"
         Me.tableLayoutPanel.SetRowSpan(Me.logoPictureBox, 6)
-        Me.logoPictureBox.Size = New System.Drawing.Size(178, 256)
+        Me.logoPictureBox.Size = New System.Drawing.Size(194, 278)
         Me.logoPictureBox.TabIndex = 12
         Me.logoPictureBox.TabStop = False
         '
         'radLabelProductName
         '
         Me.radLabelProductName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelProductName.Location = New System.Drawing.Point(190, 0)
+        Me.radLabelProductName.Location = New System.Drawing.Point(206, 0)
         Me.radLabelProductName.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelProductName.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelProductName.Name = "radLabelProductName"
@@ -101,7 +133,7 @@ Partial Public Class UIAboutBox
         'radLabelVersion
         '
         Me.radLabelVersion.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelVersion.Location = New System.Drawing.Point(190, 26)
+        Me.radLabelVersion.Location = New System.Drawing.Point(206, 28)
         Me.radLabelVersion.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelVersion.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelVersion.Name = "radLabelVersion"
@@ -117,7 +149,7 @@ Partial Public Class UIAboutBox
         'radLabelCopyright
         '
         Me.radLabelCopyright.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelCopyright.Location = New System.Drawing.Point(190, 52)
+        Me.radLabelCopyright.Location = New System.Drawing.Point(206, 56)
         Me.radLabelCopyright.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelCopyright.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelCopyright.Name = "radLabelCopyright"
@@ -133,7 +165,7 @@ Partial Public Class UIAboutBox
         'radLabelCompanyName
         '
         Me.radLabelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radLabelCompanyName.Location = New System.Drawing.Point(190, 78)
+        Me.radLabelCompanyName.Location = New System.Drawing.Point(206, 84)
         Me.radLabelCompanyName.Margin = New System.Windows.Forms.Padding(6, 0, 3, 0)
         Me.radLabelCompanyName.MaximumSize = New System.Drawing.Size(0, 17)
         Me.radLabelCompanyName.Name = "radLabelCompanyName"
@@ -150,36 +182,71 @@ Partial Public Class UIAboutBox
         '
         Me.radTextBoxDescription.AutoSize = False
         Me.radTextBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.radTextBoxDescription.Location = New System.Drawing.Point(190, 107)
+        Me.radTextBoxDescription.Location = New System.Drawing.Point(206, 115)
         Me.radTextBoxDescription.Margin = New System.Windows.Forms.Padding(6, 3, 3, 3)
         Me.radTextBoxDescription.Multiline = True
         Me.radTextBoxDescription.Name = "radTextBoxDescription"
         Me.radTextBoxDescription.ReadOnly = True
         Me.radTextBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.radTextBoxDescription.Size = New System.Drawing.Size(366, 125)
+        Me.radTextBoxDescription.Size = New System.Drawing.Size(399, 136)
         Me.radTextBoxDescription.TabIndex = 23
         Me.radTextBoxDescription.TabStop = False
         Me.radTextBoxDescription.Text = "Description"
         Me.radTextBoxDescription.ThemeName = "TelerikMetroBlue"
         '
+        'RadPageViewPage2
+        '
+        Me.RadPageViewPage2.Controls.Add(Me.GVChangeLog)
+        Me.RadPageViewPage2.Location = New System.Drawing.Point(5, 31)
+        Me.RadPageViewPage2.Name = "RadPageViewPage2"
+        Me.RadPageViewPage2.Size = New System.Drawing.Size(608, 284)
+        Me.RadPageViewPage2.Text = "Change Log"
+        '
+        'GVChangeLog
+        '
+        Me.GVChangeLog.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GVChangeLog.Location = New System.Drawing.Point(0, 0)
+        '
+        'GVChangeLog
+        '
+        Me.GVChangeLog.MasterTemplate.AllowAddNewRow = False
+        Me.GVChangeLog.MasterTemplate.AllowColumnReorder = False
+        Me.GVChangeLog.Name = "GVChangeLog"
+        Me.GVChangeLog.ReadOnly = True
+        Me.GVChangeLog.ShowGroupPanel = False
+        Me.GVChangeLog.Size = New System.Drawing.Size(608, 284)
+        Me.GVChangeLog.TabIndex = 0
+        Me.GVChangeLog.Text = "RadGridView1"
+        Me.GVChangeLog.ThemeName = "TelerikMetroBlue"
+        '
         'okRadButton
         '
         Me.okRadButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.okRadButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.okRadButton.Location = New System.Drawing.Point(481, 238)
+        Me.okRadButton.Location = New System.Drawing.Point(520, 3)
         Me.okRadButton.Name = "okRadButton"
         Me.okRadButton.Size = New System.Drawing.Size(75, 21)
         Me.okRadButton.TabIndex = 24
         Me.okRadButton.Text = "&OK"
         Me.okRadButton.ThemeName = "TelerikMetroBlue"
         '
+        'RadStatusStrip1
+        '
+        Me.RadStatusStrip1.Controls.Add(Me.okRadButton)
+        Me.RadStatusStrip1.Location = New System.Drawing.Point(9, 329)
+        Me.RadStatusStrip1.Name = "RadStatusStrip1"
+        Me.RadStatusStrip1.Size = New System.Drawing.Size(618, 25)
+        Me.RadStatusStrip1.TabIndex = 2
+        Me.RadStatusStrip1.Text = "RadStatusStrip1"
+        Me.RadStatusStrip1.ThemeName = "TelerikMetroBlue"
+        '
         'UIAboutBox
         '
-        Me.AcceptButton = Me.okRadButton
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(577, 280)
-        Me.Controls.Add(Me.tableLayoutPanel)
+        Me.ClientSize = New System.Drawing.Size(636, 363)
+        Me.Controls.Add(Me.PageView)
+        Me.Controls.Add(Me.RadStatusStrip1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
@@ -196,6 +263,9 @@ Partial Public Class UIAboutBox
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "About OnTrack"
         Me.ThemeName = "TelerikMetroBlue"
+        CType(Me.PageView, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.PageView.ResumeLayout(False)
+        Me.RadPageViewPage1.ResumeLayout(False)
         Me.tableLayoutPanel.ResumeLayout(False)
         Me.tableLayoutPanel.PerformLayout()
         CType(Me.logoPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
@@ -204,21 +274,32 @@ Partial Public Class UIAboutBox
         CType(Me.radLabelCopyright, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.radLabelCompanyName, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.radTextBoxDescription, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.RadPageViewPage2.ResumeLayout(False)
+        CType(Me.GVChangeLog.MasterTemplate, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.GVChangeLog, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.okRadButton, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.RadStatusStrip1.ResumeLayout(False)
         CType(Me, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
 #End Region
 
-    Private tableLayoutPanel As System.Windows.Forms.TableLayoutPanel
-    Private logoPictureBox As System.Windows.Forms.PictureBox
-    Private radLabelProductName As Telerik.WinControls.UI.RadLabel
-    Private radLabelVersion As Telerik.WinControls.UI.RadLabel
-    Private radLabelCopyright As Telerik.WinControls.UI.RadLabel
-    Private radLabelCompanyName As Telerik.WinControls.UI.RadLabel
+    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents PageView As Telerik.WinControls.UI.RadPageView
+    Friend WithEvents RadPageViewPage1 As Telerik.WinControls.UI.RadPageViewPage
+    Private WithEvents tableLayoutPanel As System.Windows.Forms.TableLayoutPanel
+    Private WithEvents logoPictureBox As System.Windows.Forms.PictureBox
+    Private WithEvents radLabelProductName As Telerik.WinControls.UI.RadLabel
+    Private WithEvents radLabelVersion As Telerik.WinControls.UI.RadLabel
+    Private WithEvents radLabelCopyright As Telerik.WinControls.UI.RadLabel
+    Private WithEvents radLabelCompanyName As Telerik.WinControls.UI.RadLabel
     Private WithEvents radTextBoxDescription As Telerik.WinControls.UI.RadTextBox
     Private WithEvents okRadButton As Telerik.WinControls.UI.RadButton
-    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents RadPageViewPage2 As Telerik.WinControls.UI.RadPageViewPage
+    Friend WithEvents RadStatusStrip1 As Telerik.WinControls.UI.RadStatusStrip
+    Friend WithEvents GVChangeLog As Telerik.WinControls.UI.RadGridView
 End Class
