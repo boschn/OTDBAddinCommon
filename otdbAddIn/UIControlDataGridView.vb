@@ -4,14 +4,47 @@ Imports System.Drawing
 Imports System.Windows.Forms
 Imports OnTrack.Database
 Imports OnTrack.Commons
+Imports System.ComponentModel
 
 Namespace Global.OnTrack.UI
+    Public Class UIControlDataGridViewEventArgs
+        Inherits System.EventArgs
+
+        Private _msgtext As String
+
+        Public Sub New(messagetext As String)
+            _msgtext = messagetext
+        End Sub
+        ''' <summary>
+        ''' Gets or sets the msgtext.
+        ''' </summary>
+        ''' <value>The msgtext.</value>
+        Public Property Msgtext() As String
+            Get
+                Return Me._msgtext
+            End Get
+            Set(value As String)
+                Me._msgtext = value
+            End Set
+        End Property
+
+    End Class
+    ''' <summary>
+    ''' DataGridView Control for Objects
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class UIControlDataGridView
         Inherits RadGridView
+
+
 
         Private WithEvents _modeltable As ormModelTable
         Private WithEvents _statuslabel As RadLabelElement
         Private WithEvents _ProgressPictureBox As System.Windows.Forms.PictureBox
+        Private _pwfieldname As String = ""
+
+        Public Event OnStatusTextChanged As EventHandler(Of UIControlDataGridViewEventArgs)
+
         ''' <summary>
         ''' Gets or sets the progress picture box.
         ''' </summary>
@@ -41,7 +74,7 @@ Namespace Global.OnTrack.UI
                 If Me.Controls.Count = 0 Then Me.Controls.Add(_ProgressPictureBox)
                 Return Me._ProgressPictureBox
             End Get
-           
+
         End Property
 
         ''' <summary>
@@ -56,7 +89,7 @@ Namespace Global.OnTrack.UI
                         alist.Add(Me.Modeltable.DataObject(aRow.Index))
                     Next
                 End If
-                Return aList
+                Return alist
             End Get
 
         End Property
@@ -87,9 +120,6 @@ Namespace Global.OnTrack.UI
             End Set
         End Property
 
-        Private Sub UIControlDataGridView_SelectionChanged(sender As Object, e As System.EventArgs) Handles Me.SelectionChanged
-
-        End Sub
 
         ''' <summary>
         ''' Event On Row Adding
@@ -115,24 +145,11 @@ Namespace Global.OnTrack.UI
         Public Sub OnRowAdded(sender As Object, e As GridViewRowEventArgs) Handles Me.UserAddedRow
             If sender.Equals(Me) Then
 
-                Debug.WriteLine(Me.Name & "OnRowAdded")
+                'Debug.WriteLine(Me.Name & "OnRowAdded")
             End If
 
         End Sub
-        ''' <summary>
-        ''' Event On Cell Changed from current to new cell
-        ''' </summary>
-        ''' <param name="sender"></param>
-        ''' <param name="e"></param>
-        ''' <remarks></remarks>
-        Public Sub OnCellChanged(sender As Object, e As CurrentCellChangedEventArgs) Handles Me.CurrentCellChanged
-            If sender.Equals(Me) Then
 
-                'Debug.WriteLine(Me.Name & "OnCellChanged")
-            End If
-
-
-        End Sub
         ''' <summary>
         ''' Event On Cell Validating
         ''' </summary>
@@ -145,11 +162,54 @@ Namespace Global.OnTrack.UI
                     If (e.OldValue IsNot Nothing AndAlso e.Value IsNot Nothing AndAlso Not e.Value.Equals(e.OldValue)) _
                         OrElse (e.OldValue Is Nothing AndAlso e.Value IsNot Nothing) _
                         OrElse (e.OldValue IsNot Nothing AndAlso e.Value Is Nothing) Then
+
+
                         Debug.WriteLine(Me.Name & " OnCellValidating :" & _modeltable.Columns(e.ColumnIndex).ColumnName & " value:" & e.Value & " oldvalue:" & e.OldValue)
-                        Dim anObjectEntry As iormObjectEntry = _modeltable.GetObjectEntry(columnname:=e.Column.Name)
+                        Dim anObjectEntry As iormObjectEntry = Me.Modeltable.GetObjectEntry(columnname:=e.Column.Name)
+                        ''' skip if not an objectentry
+                        ''' 
+                        If anObjectEntry Is Nothing Then Return
+                        ''' get the object or create one
+                        ''' 
+                        Dim anDataobject As iormPersistable
+                        If e.RowIndex >= 0 Then
+                            anDataobject = Me.Modeltable.DataObject(e.RowIndex)
+                        Else
+                            Dim anObjectDefinition As ObjectDefinition = CurrentSession.Objects.GetObject(objectid:=anObjectEntry.Objectname)
+                            anDataobject = ot.CreateDataObjectInstance(type:=anObjectDefinition.ObjectType)
+                        End If
+
+
                         Dim aLog As New ObjectMessageLog
-                        Dim result As otValidationResultType = Global.OnTrack.Database.ObjectValidator.Validate(anObjectEntry, e.Value, aLog)
-                        If result = otValidationResultType.FailedNoProceed Then e.Cancel = True ' to cancel
+                        ''' 
+                        ''' APPLY THE ENTRY PROPERTIES AND TRANSFORM THE VALUE REQUESTED
+                        ''' 
+                        Dim outvalue As Object = e.Value ' copy over
+                        If Not TryCast(anDataobject, iormInfusable).Normalizevalue(anObjectEntry.Entryname, outvalue) Then
+                            CoreMessageHandler(message:="Warning ! Could not normalize value", arg1:=outvalue, objectname:=anObjectEntry.Objectname, _
+                                                entryname:=anObjectEntry.Entryname, subname:="UIConTrolDataGridView.CellValidating")
+
+                        End If
+                        ''''
+                        '''' validate the value
+                        ''''
+                        Dim result As otValidationResultType = _
+                            Global.OnTrack.Database.ObjectValidator.Validate(anObjectEntry, outvalue, aLog)
+
+                        ''' result
+                        If result = otValidationResultType.FailedNoProceed Then
+                            e.Cancel = True ' to cancel
+                            AddStatusMessage(aLog.MessageText)
+                            Me.CurrentCell.BorderBoxStyle = Telerik.WinControls.BorderBoxStyle.SingleBorder
+                            Me.CurrentCell.BorderColor = Color.Red
+                            Me.CurrentCell.BorderDashStyle = Drawing2D.DashStyle.Solid
+                            Me.CurrentCell.BorderThickness = New Padding(1)
+                        Else
+                            Me.CurrentCell.BorderBoxStyle = Telerik.WinControls.BorderBoxStyle.SingleBorder
+                            Me.CurrentCell.BorderColor = Color.LightGreen
+                            Me.CurrentCell.BorderDashStyle = Drawing2D.DashStyle.Solid
+                            Me.CurrentCell.BorderThickness = New Padding(1)
+                        End If
 
                     End If
 
@@ -243,7 +303,30 @@ Namespace Global.OnTrack.UI
             If _statuslabel Is Nothing Then Exit Sub
 
             _statuslabel.Text = Date.Now & " : " & message
+
+            RaiseEvent OnStatusTextChanged(Me, New UIControlDataGridViewEventArgs(Date.Now & " : " & message))
             Me.Refresh()
+        End Sub
+
+        ''' <summary>
+        ''' Create failed
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Private Sub Modeltable_ObjectOpFailed(sender As Object, e As ormModelTable.EventArgs) Handles _modeltable.ObjectCreateFailed, _modeltable.ObjectDeleteFailed
+            Me.CurrentRow.ErrorText = e.Message
+            Me.AddStatusMessage(e.Message)
+        End Sub
+        ''' <summary>
+        ''' Update failed
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Private Sub _modeltable_ObjectUpdateFailed(sender As Object, e As ormModelTable.EventArgs) Handles _modeltable.ObjectUpdateFailed, _modeltable.ObjectPersistFailed
+            Me.CurrentRow.ErrorText = e.Msglog.MessageText
+            Me.AddStatusMessage(e.Msglog.MessageText)
         End Sub
         ''' <summary>
         ''' Event handler for operation messages
@@ -255,7 +338,6 @@ Namespace Global.OnTrack.UI
             If _statuslabel IsNot Nothing AndAlso e.Message IsNot Nothing Then
                 AddStatusMessage(e.Message)
             End If
-
         End Sub
         ''' <summary>
         ''' 
@@ -280,7 +362,7 @@ Namespace Global.OnTrack.UI
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         ''' <remarks></remarks>
-        Public Sub OnInitialize(sender As Object, e As EventArgs) Handles Me.Initialized
+        Public Sub OnInitialize(sender As Object, e As System.EventArgs) Handles Me.Initialized
             Me.EnableCustomFiltering = False
             Me.EnableCustomGrouping = False
             Me.EnableCustomSorting = False
@@ -312,18 +394,30 @@ Namespace Global.OnTrack.UI
             If CurrentSession.IsRunning Then
 
                 ''' *** save the Format of the data grid
-                Dim separator As RadMenuSeparatorItem = New RadMenuSeparatorItem()
-                e.ContextMenu.Items.Add(separator)
-                Dim menuItem1 As New RadMenuItem("Save UI Layout")
-                menuItem1.ForeColor = Color.Red
+                ''' 
+                If e.ContextMenu.Items.Where(Function(x) x.Name = "Save UI Layout").FirstOrDefault Is Nothing Then
+                    Dim separator As RadMenuSeparatorItem = New RadMenuSeparatorItem()
+                    e.ContextMenu.Items.Add(separator)
 
-                ' add to existing menu
-                AddHandler menuItem1.Click, AddressOf SaveUILayout
-                e.ContextMenu.Items.Add(menuItem1)
-                Dim menuItem2 As New RadMenuItem("Load UI Layout")
-                ' add to existing menu
-                AddHandler menuItem2.Click, AddressOf LoadUILayout
-                e.ContextMenu.Items.Add(menuItem2)
+                    Dim menuItemCS As New RadMenuItem("Adjust Current Column Size")
+                    AddHandler menuItemCS.Click, AddressOf OnMenuItemClick_AdjustColumnSize
+                    e.ContextMenu.Items.Add(menuItemCS)
+
+
+                    Dim menuItemCSa As New RadMenuItem("Adjust All Columns Size")
+                    AddHandler menuItemCSa.Click, AddressOf OnMenuItemClick_AdjustAllColumnSize
+                    e.ContextMenu.Items.Add(menuItemCSa)
+
+                    Dim menuItem1 As New RadMenuItem("Save UI Layout")
+                    menuItem1.ForeColor = Color.Red
+                    AddHandler menuItem1.Click, AddressOf OnMenuItemClick_SaveUILayout
+                    e.ContextMenu.Items.Add(menuItem1)
+
+                    Dim menuItem2 As New RadMenuItem("Load UI Layout")
+                    AddHandler menuItem2.Click, AddressOf OnMenuItemClick_LoadUILayout
+                    e.ContextMenu.Items.Add(menuItem2)
+                End If
+
             Else
                 Dim element1 = e.ContextMenu.Items.Select(Function(x) x.Text = "Save UI Layout")
                 If element1 IsNot Nothing Then
@@ -335,35 +429,47 @@ Namespace Global.OnTrack.UI
                 End If
             End If
         End Sub
+
+
         ''' <summary>
-        ''' Save the Layout Status
+        ''' MenuItemClick Event handler
         ''' </summary>
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         ''' <remarks></remarks>
-        Public Sub SaveUILayout(sender As Object, e As EventArgs)
-            Dim aXML As Xml.XmlWriter
-            Dim aString As New System.Text.StringBuilder
+        Public Sub OnMenuItemClick_AdjustAllColumnSize(sender As Object, e As System.EventArgs)
+            Me.MasterGridViewTemplate.AutoSizeColumnsMode = GridViewAutoSizeColumnsMode.None
+            Me.MasterGridViewTemplate.BestFitColumns(BestFitColumnMode.AllCells)
+        End Sub
 
-            aXML = Xml.XmlWriter.Create(aString)
-            Me.SaveLayout(aXML)
-            aXML.Close()
+        ''' <summary>
+        ''' MenuItemClick Event handler
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Public Sub OnMenuItemClick_AdjustColumnSize(sender As Object, e As System.EventArgs)
+            Me.CurrentColumn.BestFit()
+        End Sub
 
-            If CurrentSession.IsRunning Then
-                If CurrentSession.RequireAccessRight(otAccessRight.ReadUpdateData) Then
-                    CurrentSession.CurrentDomain.SetSetting(id:="UI." & Me.Name & "." & _modeltable.Id, datatype:=otDataType.Text, _
-                                                            description:="Setting for the UI ControlDataGridView Element", value:=aString.ToString)
-                    If CurrentSession.CurrentDomain.Persist() Then
-                        AddStatusMessage("layout format saved in database domain (" & CurrentSession.CurrentDomainID & ") setting")
-                    Else
-                        AddStatusMessage("unable to save layout format - see session log")
-                    End If
-                Else
-                    AddStatusMessage("unable to save layout format - OnTrack has not granted update rights")
-                End If
-            Else
-                AddStatusMessage("unable to save layout format - OnTrack session not running")
-            End If
+        ''' <summary>
+        ''' MenuItemClick Event handler
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Public Sub OnMenuItemClick_SaveUILayout(sender As Object, e As System.EventArgs)
+            Call StoreGridViewLayout()
+        End Sub
+
+        ''' <summary>
+        ''' MenuItemClick Event handler
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Public Sub OnMenuItemClick_LoadUILayout(sender As Object, e As System.EventArgs)
+            Call RetrieveGridViewLayout()
         End Sub
         ''' <summary>
         ''' Save the Layout Status
@@ -371,25 +477,73 @@ Namespace Global.OnTrack.UI
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         ''' <remarks></remarks>
-        Public Sub LoadUILayout(sender As Object, e As EventArgs)
+        Public Sub StoreGridViewLayout()
+            Dim aXML As Xml.XmlWriter
+            Dim aString As New System.Text.StringBuilder
+            Try
+                Me.XmlSerializationInfo.DisregardOriginalSerializationVisibility = True
+                Me.XmlSerializationInfo.SerializationMetadata.Clear()
+                Me.XmlSerializationInfo.SerializationMetadata.Add(GetType(RadGridView), "MasterTemplate", DesignerSerializationVisibilityAttribute.Content)
+                Me.XmlSerializationInfo.SerializationMetadata.Add(GetType(GridViewTemplate), "Columns", DesignerSerializationVisibilityAttribute.Content)
+                Me.XmlSerializationInfo.SerializationMetadata.Add(GetType(GridViewDataColumn), "UniqueName", DesignerSerializationVisibilityAttribute.Visible)
+                Me.XmlSerializationInfo.SerializationMetadata.Add(GetType(GridViewDataColumn), "Width", DesignerSerializationVisibilityAttribute.Visible)
+
+                aXML = Xml.XmlWriter.Create(aString)
+                MyBase.SaveLayout(aXML)
+                aXML.Close()
+
+                If CurrentSession.IsRunning Then
+                    If CurrentSession.RequireAccessRight(otAccessRight.ReadUpdateData) Then
+                        CurrentSession.CurrentDomain.SetSetting(id:="UI." & Me.Name & "." & _modeltable.Id, datatype:=otDataType.Text, _
+                                                                description:="Setting for the UI ControlDataGridView Element", value:=aString.ToString)
+                        If CurrentSession.CurrentDomain.Persist() Then
+                            AddStatusMessage("layout format saved in database domain (" & CurrentSession.CurrentDomainID & ") setting")
+                        Else
+                            AddStatusMessage("unable to save layout format - see session log")
+                        End If
+                    Else
+                        AddStatusMessage("unable to save layout format - OnTrack has not granted update rights")
+                    End If
+                Else
+                    AddStatusMessage("unable to save layout format - OnTrack session not running")
+                End If
+            Catch ex As Exception
+                CoreMessageHandler(exception:=ex, subname:="UIControlDataGridView.StoreGridViewLayout")
+            End Try
+
+        End Sub
+        ''' <summary>
+        ''' Save the Layout Status
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Public Sub RetrieveGridViewLayout()
             Dim aString As String
             Dim aXML As Xml.XmlReader
 
-            If CurrentSession.IsRunning Then
-                Dim aDomainSetting As DomainSetting = CurrentSession.CurrentDomain.GetSetting(id:="UI." & Me.Name & "." & _modeltable.Id)
-                If aDomainSetting IsNot Nothing Then
-                    aString = aDomainSetting.value.ToString
-                    aXML = Xml.XmlReader.Create(New IO.StringReader(aString))
-                    Me.LoadLayout(aXML)
-                    aXML.Close()
-                    AddStatusMessage("layout loaded from domain setting")
+            Try
+
+                If CurrentSession.IsRunning Then
+                    Dim aDomainSetting As DomainSetting = CurrentSession.CurrentDomain.GetSetting(id:="UI." & Me.Name & "." & _modeltable.Id)
+                    If aDomainSetting IsNot Nothing Then
+                        aString = aDomainSetting.value.ToString
+                        aXML = Xml.XmlReader.Create(New IO.StringReader(aString))
+                        Me.LoadLayout(aXML)
+                        aXML.Close()
+                        AddStatusMessage("layout loaded from domain setting")
+                    Else
+                        AddStatusMessage("no layout defined in domain setting")
+                    End If
+
                 Else
-                    AddStatusMessage("no layout defined in domain setting")
+                    AddStatusMessage("unable to load layout format - OnTrack session not running")
                 End If
 
-            Else
-                AddStatusMessage("unable to load layout format - OnTrack session not running")
-            End If
+            Catch ex As Exception
+                CoreMessageHandler(exception:=ex, subname:="UIControlDataGridView.RestoreGridViewLayout")
+            End Try
+
 
         End Sub
         ''' <summary>
@@ -414,8 +568,33 @@ Namespace Global.OnTrack.UI
                     Me.Controls.Clear()
                     Me.Refresh()
 
+                    For Each aColumn In Me.Columns.ToList
+                        Dim anEntry As iormObjectEntry = _modeltable.GetObjectEntry(aColumn.FieldName)
+                        If anEntry IsNot Nothing Then
+                            ''' hack: if enrypted then show masked
+                            If anEntry.Properties.Where(Function(x) x.Enum = otObjectEntryProperty.Encrypted).FirstOrDefault IsNot Nothing Then
+                                _pwfieldname = anEntry.Entryname
+                            End If
+                        End If
+                    Next
+
                     '' try to load the UI Layout
-                    Call LoadUILayout(Me, New EventArgs())
+                    Call RetrieveGridViewLayout()
+
+
+                    '' switch off editing of primary keys
+                    For Each aRow In Me.Rows
+                        For Each aCell As GridViewCellInfo In aRow.Cells
+                            Dim anEntry As iormObjectEntry = _modeltable.GetObjectEntry(aCell.ColumnInfo.FieldName)
+                            If anEntry IsNot Nothing Then
+                                Dim anobjectdefinition As ObjectDefinition = anEntry.GetObjectDefinition
+                                If anobjectdefinition.GetPrimaryKeyEntrynames.Contains(anEntry.Entryname) Then
+                                    aCell.ReadOnly = True
+                                End If
+
+                            End If
+                        Next
+                    Next
                     '' status label
                     If _statuslabel IsNot Nothing Then
                         AddStatusMessage("finished operation in " & awatch.ElapsedMilliseconds & "ms  and " & _modeltable.Rows.Count & " rows loaded")
@@ -424,6 +603,45 @@ Namespace Global.OnTrack.UI
                         Me.Columns(ormModelTable.constQRYRowReference).IsVisible = False
                     End If
                 End If
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Cell Editor initialized
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Private Sub radGridView_CellEditorInitialized(sender As Object, e As GridViewCellEventArgs) Handles Me.CellEditorInitialized
+            Dim dataColumn As GridViewDataColumn = TryCast(e.Column, GridViewDataColumn)
+
+            If dataColumn IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(_pwfieldname) AndAlso dataColumn.FieldName = _pwfieldname Then
+                Dim textBoxEditor As RadTextBoxEditor = TryCast(Me.ActiveEditor, RadTextBoxEditor)
+
+                If textBoxEditor IsNot Nothing Then
+                    Dim editorElement As RadTextBoxEditorElement = TryCast(textBoxEditor.EditorElement, RadTextBoxEditorElement)
+                    editorElement.PasswordChar = "#"c
+                End If
+            End If
+        End Sub
+        ''' <summary>
+        ''' CellFormatting Handler
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
+        Private Sub radGridView_CellFormatting(sender As Object, e As CellFormattingEventArgs) Handles Me.CellFormatting
+            Dim dataColumn As GridViewDataColumn = TryCast(e.CellElement.ColumnInfo, GridViewDataColumn)
+
+            If dataColumn IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(_pwfieldname) AndAlso dataColumn.FieldName = _pwfieldname Then
+                Dim value As Object = e.CellElement.RowInfo.Cells(dataColumn.Name).Value
+                Dim text As String = [String].Empty
+                If value IsNot Nothing Then
+                    Dim passwordLen As Integer = Convert.ToString(value).Length
+                    text = [String].Join("#", New String(passwordLen - 1) {})
+                End If
+
+                e.CellElement.Text = text
             End If
         End Sub
         ''' <summary>
@@ -467,7 +685,7 @@ Namespace Global.OnTrack.UI
             End If
         End Sub
 
-      
+
     End Class
 End Namespace
 

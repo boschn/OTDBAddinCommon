@@ -371,10 +371,12 @@ Public Class UIFormDBExplorer
                         .AutoSizeColumnsMode = True
                         .Status = Me.StatusLabel
                         .Dock = System.Windows.Forms.DockStyle.Fill
+                        .Status = Me.StatusLabel
                     End With
                     Me.PageData.Controls.Add(Me.DataGrid)
                     Me.RefreshMenu.Tag = Me.DataGrid
                     Me.RefreshMenu.Visibility = ElementVisibility.Visible
+                    AddHandler Me.DataGrid.OnStatusTextChanged, AddressOf Me.UIFormDBExplorer_UIControlDataGridViewOnStatusMessage
 
                 Case Else
                     Me.PageData.Enabled = False
@@ -396,6 +398,19 @@ Public Class UIFormDBExplorer
         End If
     End Sub
 
+    ''' <summary>
+    ''' Event Handler for the Messages of the embedded DataGridView
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub UIFormDBExplorer_UIControlDataGridViewOnStatusMessage(sender As Object, e As UIControlDataGridViewEventArgs)
+        Me.StatusStrip.Items.Remove(Me.StatusLabel)
+        Me.StatusLabel.Text = e.Msgtext
+        Me.StatusLabel.ToolTipText = e.Msgtext
+        Me.StatusStrip.Items.Insert(0, Me.StatusLabel)
+        Me.Refresh()
+    End Sub
     ''' <summary>
     ''' Handler for the Operation Menu Item
     ''' </summary>
@@ -439,20 +454,25 @@ Public Class UIFormDBExplorer
                     RadMessageBox.SetThemeName(Me.ThemeName)
                     Dim ds As Windows.Forms.DialogResult = _
                         RadMessageBox.Show(Me, "Are you sure to run operation '" & anOperation.Title & "' - '" & anOperation.Description & "' on " & vbLf _
-                                                & anOperation.ClassDescription.ObjectAttribute.Title & " (" & Converter.Array2StringList(aDataobject.PrimaryKeyValues) & ")" _
+                                                & anOperation.ClassDescription.ObjectAttribute.Title & " (" & Converter.Array2StringList(aDataobject.ObjectPrimaryKeyValues) & ")" _
                                            , "Please check ", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
                     If ds = Windows.Forms.DialogResult.Yes Then
 
                         Dim aDelegate = anOperation.ClassDescription.GetOperartionCallerDelegate(anOperation.OperationName)
+                        Dim anoldCursor = Me.Cursor
+                        Me.Cursor = Cursors.WaitCursor
+                        Me.StatusLabel.Text = "operation '" & anOperation.Title & "' is running - please stand by ..."
                         Dim result As Object = aDelegate(aDataobject, theParameters)
                         If DirectCast(result, Boolean) = True Then
                             Me.StatusLabel.Text = "operation '" & anOperation.Title & "' run with success"
+                            Me.Cursor = anoldCursor
                             Return
                         Else
                             Me.StatusLabel.Text = "operation '" & anOperation.Title & "' failed to run"
                             Call CoreMessageHandler(subname:="UIFormDBExplorer.UIFormDBExplorer_operationMenuOnclick", messagetype:=otCoreMessageType.InternalError, _
                                           message:="operation failed", _
                                           arg1:=anOperation.OperationName, objectname:=aDataobject.ObjectID)
+                            Me.Cursor = anoldCursor
                             Return
                         End If
                     End If
