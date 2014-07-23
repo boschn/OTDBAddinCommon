@@ -462,6 +462,8 @@ Public Class UIFormDBExplorer
                         Dim anoldCursor = Me.Cursor
                         Me.Cursor = Cursors.WaitCursor
                         Me.StatusLabel.Text = "operation '" & anOperation.Title & "' is running - please stand by ..."
+                        Me.Refresh()
+
                         Dim result As Object = aDelegate(aDataobject, theParameters)
                         If DirectCast(result, Boolean) = True Then
                             Me.StatusLabel.Text = "operation '" & anOperation.Title & "' run with success"

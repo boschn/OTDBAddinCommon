@@ -19,6 +19,8 @@ Option Explicit On
 Imports OnTrack.Database
 
 Public Module otAddinCommon
+    <ormChangeLogEntry(Application:=ConstApplicationAddinCommon, module:="", version:=1, release:=1, patch:=2, changeimplno:=4, _
+       description:="Rework adding data to the DBExplorer Grids")> _
     <ormChangeLogEntry(Application:=ConstApplicationAddinCommon, module:="", version:=1, release:=1, patch:=2, changeimplno:=3, _
        description:="Password Editor for encrypted entry properties")> _
    <ormChangeLogEntry(Application:=ConstApplicationAddinCommon, module:="", version:=1, release:=1, patch:=2, changeimplno:=2, _

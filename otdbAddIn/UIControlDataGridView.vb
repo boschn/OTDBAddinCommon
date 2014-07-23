@@ -86,7 +86,8 @@ Namespace Global.OnTrack.UI
                 Dim alist As New List(Of ormDataObject)
                 If Me.SelectionMode = GridViewSelectionMode.FullRowSelect Then
                     For Each aRow In Me.SelectedRows
-                        alist.Add(Me.Modeltable.DataObject(aRow.Index))
+                        Dim aDataObject As ormDataObject = Me.Modeltable.DataObject(aRow.Index)
+                        If aDataObject IsNot Nothing Then alist.Add(aDataObject)
                     Next
                 End If
                 Return alist
@@ -119,8 +120,6 @@ Namespace Global.OnTrack.UI
                 Me._modeltable = value
             End Set
         End Property
-
-
         ''' <summary>
         ''' Event On Row Adding
         ''' </summary>
@@ -144,8 +143,7 @@ Namespace Global.OnTrack.UI
         ''' <remarks></remarks>
         Public Sub OnRowAdded(sender As Object, e As GridViewRowEventArgs) Handles Me.UserAddedRow
             If sender.Equals(Me) Then
-
-                'Debug.WriteLine(Me.Name & "OnRowAdded")
+                Debug.WriteLine(Me.Name & "OnRowAdded")
             End If
 
         End Sub
@@ -166,11 +164,12 @@ Namespace Global.OnTrack.UI
 
                         Debug.WriteLine(Me.Name & " OnCellValidating :" & _modeltable.Columns(e.ColumnIndex).ColumnName & " value:" & e.Value & " oldvalue:" & e.OldValue)
                         Dim anObjectEntry As iormObjectEntry = Me.Modeltable.GetObjectEntry(columnname:=e.Column.Name)
+                        Dim result As otValidationResultType
+                        Dim msglog As New ObjectMessageLog
                         ''' skip if not an objectentry
                         ''' 
                         If anObjectEntry Is Nothing Then Return
                         ''' get the object or create one
-                        ''' 
                         Dim anDataobject As iormPersistable
                         If e.RowIndex >= 0 Then
                             anDataobject = Me.Modeltable.DataObject(e.RowIndex)
@@ -179,31 +178,36 @@ Namespace Global.OnTrack.UI
                             anDataobject = ot.CreateDataObjectInstance(type:=anObjectDefinition.ObjectType)
                         End If
 
+                        If anDataobject Is Nothing Then
+                            Me.AddStatusMessage("row not a dataobject -refresh view")
+                            result = otValidationResultType.FailedNoProceed
 
-                        Dim aLog As New ObjectMessageLog
-                        ''' 
-                        ''' APPLY THE ENTRY PROPERTIES AND TRANSFORM THE VALUE REQUESTED
-                        ''' 
-                        Dim outvalue As Object = e.Value ' copy over
-                        If Not TryCast(anDataobject, iormInfusable).Normalizevalue(anObjectEntry.Entryname, outvalue) Then
-                            CoreMessageHandler(message:="Warning ! Could not normalize value", arg1:=outvalue, objectname:=anObjectEntry.Objectname, _
-                                                entryname:=anObjectEntry.Entryname, subname:="UIConTrolDataGridView.CellValidating")
+                        Else
+                            ''' 
+                            ''' APPLY THE ENTRY PROPERTIES AND TRANSFORM THE VALUE REQUESTED
+                            ''' 
+                            Dim outvalue As Object = e.Value ' copy over
+                            If Not TryCast(anDataobject, iormInfusable).Normalizevalue(anObjectEntry.Entryname, outvalue) Then
+                                CoreMessageHandler(message:="Warning ! Could not normalize value", arg1:=outvalue, objectname:=anObjectEntry.Objectname, _
+                                                    entryname:=anObjectEntry.Entryname, subname:="UIConTrolDataGridView.CellValidating")
 
+                            End If
+                            ''''
+                            '''' validate the value
+                            ''''
+                            result = TryCast(anDataobject, iormValidatable).Validate(anObjectEntry.Entryname, outvalue, msglog)
                         End If
-                        ''''
-                        '''' validate the value
-                        ''''
-                        Dim result As otValidationResultType = _
-                            Global.OnTrack.Database.ObjectValidator.Validate(anObjectEntry, outvalue, aLog)
 
                         ''' result
                         If result = otValidationResultType.FailedNoProceed Then
                             e.Cancel = True ' to cancel
-                            AddStatusMessage(aLog.MessageText)
+                            If msglog.Count > 0 Then AddStatusMessage(msglog.MessageText)
                             Me.CurrentCell.BorderBoxStyle = Telerik.WinControls.BorderBoxStyle.SingleBorder
                             Me.CurrentCell.BorderColor = Color.Red
                             Me.CurrentCell.BorderDashStyle = Drawing2D.DashStyle.Solid
-                            Me.CurrentCell.BorderThickness = New Padding(1)
+                            Me.CurrentCell.BorderThickness = New Padding(0)
+                            'Me.CurrentRow.ErrorText = msglog.MessageText
+
                         Else
                             Me.CurrentCell.BorderBoxStyle = Telerik.WinControls.BorderBoxStyle.SingleBorder
                             Me.CurrentCell.BorderColor = Color.LightGreen
@@ -315,8 +319,7 @@ Namespace Global.OnTrack.UI
         ''' <param name="e"></param>
         ''' <remarks></remarks>
         Private Sub Modeltable_ObjectOpFailed(sender As Object, e As ormModelTable.EventArgs) Handles _modeltable.ObjectCreateFailed, _modeltable.ObjectDeleteFailed
-            Me.CurrentRow.ErrorText = e.Message
-            Me.AddStatusMessage(e.Message)
+            If Not String.IsNullOrWhiteSpace(e.Message) Then Me.AddStatusMessage(e.Message)
         End Sub
         ''' <summary>
         ''' Update failed
@@ -324,9 +327,8 @@ Namespace Global.OnTrack.UI
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         ''' <remarks></remarks>
-        Private Sub _modeltable_ObjectUpdateFailed(sender As Object, e As ormModelTable.EventArgs) Handles _modeltable.ObjectUpdateFailed, _modeltable.ObjectPersistFailed
-            Me.CurrentRow.ErrorText = e.Msglog.MessageText
-            Me.AddStatusMessage(e.Msglog.MessageText)
+        Private Sub Modeltable_ObjectUpdateFailed(sender As Object, e As ormModelTable.EventArgs) Handles _modeltable.ObjectUpdateFailed, _modeltable.ObjectPersistFailed
+            If e.Msglog.Count > 0 Then Me.AddStatusMessage(e.Msglog.MessageText)
         End Sub
         ''' <summary>
         ''' Event handler for operation messages
@@ -580,25 +582,29 @@ Namespace Global.OnTrack.UI
 
                     '' try to load the UI Layout
                     Call RetrieveGridViewLayout()
-
-
+              
                     '' switch off editing of primary keys
                     For Each aRow In Me.Rows
                         For Each aCell As GridViewCellInfo In aRow.Cells
                             Dim anEntry As iormObjectEntry = _modeltable.GetObjectEntry(aCell.ColumnInfo.FieldName)
                             If anEntry IsNot Nothing Then
                                 Dim anobjectdefinition As ObjectDefinition = anEntry.GetObjectDefinition
-                                If anobjectdefinition.GetPrimaryKeyEntrynames.Contains(anEntry.Entryname) Then
+                                Dim aKeyNameList = anobjectdefinition.GetKeyNames
+
+                                If aKeyNameList.Contains(anEntry.Entryname) Then
                                     aCell.ReadOnly = True
                                 End If
 
                             End If
                         Next
                     Next
+
                     '' status label
                     If _statuslabel IsNot Nothing Then
                         AddStatusMessage("finished operation in " & awatch.ElapsedMilliseconds & "ms  and " & _modeltable.Rows.Count & " rows loaded")
                     End If
+
+                    ''' invisible reference to modeltable objects
                     If Me.Columns.Contains(ormModelTable.constQRYRowReference) Then
                         Me.Columns(ormModelTable.constQRYRowReference).IsVisible = False
                     End If
@@ -634,14 +640,17 @@ Namespace Global.OnTrack.UI
             Dim dataColumn As GridViewDataColumn = TryCast(e.CellElement.ColumnInfo, GridViewDataColumn)
 
             If dataColumn IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(_pwfieldname) AndAlso dataColumn.FieldName = _pwfieldname Then
-                Dim value As Object = e.CellElement.RowInfo.Cells(dataColumn.Name).Value
-                Dim text As String = [String].Empty
-                If value IsNot Nothing Then
-                    Dim passwordLen As Integer = Convert.ToString(value).Length
-                    text = [String].Join("#", New String(passwordLen - 1) {})
+                If e.CellElement.RowInfo.Cells(dataColumn.Name) IsNot Nothing Then
+                    Dim value As Object = e.CellElement.RowInfo.Cells(dataColumn.Name).Value
+                    Dim text As String = [String].Empty
+                    If value IsNot Nothing Then
+                        Dim passwordLen As Integer = Convert.ToString(value).Length
+                        text = [String].Join("#", New String(passwordLen - 1) {})
+                    End If
+
+                    e.CellElement.Text = text
                 End If
 
-                e.CellElement.Text = text
             End If
         End Sub
         ''' <summary>
