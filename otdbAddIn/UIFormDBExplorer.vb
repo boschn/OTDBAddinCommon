@@ -30,9 +30,9 @@ Public Class UIFormDBExplorer
             DbParameter
         End Enum
 
-        Private _ID As String = ""
+        Private _ID As String = String.empty
         Private _Nodetype As [type] = type.Module
-        Private _Description As String = ""
+        Private _Description As String = String.empty
 
         Private _Members As New List(Of ObjectStructureItem)
         Private _DataItem As Object
@@ -118,7 +118,7 @@ Public Class UIFormDBExplorer
 
         ' Add any initialization after the InitializeComponent() call.
         ' nothing on the shadow
-        Me.DataGrid = New UIControlDataGridView()
+        Me.DataGrid = New Global.OnTrack.UI.UIControlDataGridView()
         _otdbsession = ot.CurrentSession
 
     End Sub
@@ -145,7 +145,7 @@ Public Class UIFormDBExplorer
         Dim dbCacheItem As New ObjectStructureItem With {.ID = "TableCache", .Description = "Cached Tables", .Nodetype = ObjectStructureItem.type.Database}
         cacheItem.Members.Add(dbCacheItem)
         For Each aTable In CurrentSession.Objects.TableDefinitions
-            Dim newItem As New ObjectStructureItem With {.ID = aTable.Name, .Description = aTable.Description, .Nodetype = ObjectStructureItem.type.Table, .DataItem = aTable}
+            Dim newItem As New ObjectStructureItem With {.ID = aTable.ID, .Description = aTable.Description, .Nodetype = ObjectStructureItem.type.Table, .DataItem = aTable}
             If aTable.UseCache Then dbCacheItem.Members.Add(newItem)
         Next
 
@@ -155,8 +155,8 @@ Public Class UIFormDBExplorer
         _topItems.Add(databaseItem)
         Dim dbparameterITem As New ObjectStructureItem With {.ID = "Parameters", .Description = "Db parameters", .Nodetype = ObjectStructureItem.type.DbParameter}
         databaseItem.Members.Add(dbparameterITem)
-        For Each aTable In TableDefinition.All
-            Dim newItem As New ObjectStructureItem With {.ID = aTable.Name, .Description = aTable.Description, .Nodetype = ObjectStructureItem.type.Table, .DataItem = aTable}
+        For Each aTable In ContainerDefinition.All
+            Dim newItem As New ObjectStructureItem With {.ID = aTable.ID, .Description = aTable.Description, .Nodetype = ObjectStructureItem.type.Table, .DataItem = aTable}
             databaseItem.Members.Add(newItem)
         Next
 
@@ -172,7 +172,7 @@ Public Class UIFormDBExplorer
 
                 Dim anObjectDefinition = CurrentSession.Objects.GetObject(objectid:=aDescription.ID)
                 If anObjectDefinition Is Nothing Then
-                    CoreMessageHandler(message:="Object definition could not be retrieved", objectname:=aDescription.ID, arg1:=aName, subname:="UIFormDBExplorer.BuildTree", messagetype:=otCoreMessageType.InternalError)
+                    CoreMessageHandler(message:="Object definition could not be retrieved", objectname:=aDescription.ID, argument:=aName, procedure:="UIFormDBExplorer.BuildTree", messagetype:=otCoreMessageType.InternalError)
                 End If
                 Dim anObjectItem As New ObjectStructureItem With {.ID = aDescription.ObjectAttribute.ID, .Nodetype = ObjectStructureItem.type.Object, _
                                                                   .DataItem = anObjectDefinition}
@@ -190,6 +190,7 @@ Public Class UIFormDBExplorer
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
+    ''' 
     Public Overloads Sub OnLoad(sender As Object, e As EventArgs) Handles Me.Load
 
         If ot.RequireAccess(accessRequest:=otAccessRight.ReadOnly) Then
@@ -264,7 +265,7 @@ Public Class UIFormDBExplorer
             If aNewDomain.ID.ToUpper <> CurrentSession.CurrentDomainID.ToUpper Then
 
                 DomainComboMenu.ComboBoxElement.ToolTipText = aNewDomain.Description
-                RadMessageBox.SetThemeName(Me.ThemeName)
+                'RadMessageBox.SetThemeName(Me.ThemeName)
                 Dim ds As Windows.Forms.DialogResult = _
                     RadMessageBox.Show(Me, "Are you sure to switch to Domain '" & aNewDomain.ID & "' ?", "Switch Domain ", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
                 If ds = Windows.Forms.DialogResult.Yes Then
@@ -309,6 +310,12 @@ Public Class UIFormDBExplorer
     End Sub
 
     '#Region dataBoundItem
+    ''' <summary>
+    ''' SelectedNodeChanged Event
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub ObjectTree_SelectedNodeChanged(ByVal sender As Object, ByVal e As Telerik.WinControls.UI.RadTreeViewEventArgs) Handles ObjectTree.SelectedNodeChanged
         Dim nodeitem As ObjectStructureItem = TryCast(e.Node.DataBoundItem, ObjectStructureItem)
         If nodeitem IsNot Nothing Then
@@ -317,9 +324,9 @@ Public Class UIFormDBExplorer
 
                 Case ObjectStructureItem.type.Object
                     Me.PageData.Enabled = True
-                    Me.PageObjectProperties.Enabled = True
+                    'Me.PageObjectProperties.Enabled = True
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
-                    Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
+                    'Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Visible
                     Dim aObjectdefinition As ObjectDefinition = TryCast(nodeitem.DataItem, ObjectDefinition)
 
 
@@ -363,17 +370,20 @@ Public Class UIFormDBExplorer
                     End If
                     Me.Refresh()
 
-                    Dim aqry As Global.OnTrack.Database.iormQueriedEnumeration = aObjectdefinition.GetQuery(ormDataObject.ConstQRYAll)
+                    Dim aqry As Global.OnTrack.Database.iormQueriedEnumeration = aObjectdefinition.GetQuery(ormBusinessObject.ConstQRYAll)
                     Dim aModeltable As ormModelTable = New ormModelTable(aqry)
-                    With TryCast(Me.DataGrid, UIControlDataGridView)
+                    With Me.DataGrid
                         .DataSource = aModeltable
-                        .ThemeName = "TelerikMetroBlue"
-                        .AutoSizeColumnsMode = True
                         .Status = Me.StatusLabel
                         .Dock = System.Windows.Forms.DockStyle.Fill
                         .Status = Me.StatusLabel
+                        ''' * no grouping
+                        .RadGridView.EnableGrouping = False
+                        .RadGridView.AllowAddNewRow = True
                     End With
+
                     Me.PageData.Controls.Add(Me.DataGrid)
+                    If Not Me.DataGrid.IsLoaded Then Me.DataGrid.LoadData()
                     Me.RefreshMenu.Tag = Me.DataGrid
                     Me.RefreshMenu.Visibility = ElementVisibility.Visible
                     AddHandler Me.DataGrid.OnStatusTextChanged, AddressOf Me.UIFormDBExplorer_UIControlDataGridViewOnStatusMessage
@@ -381,8 +391,8 @@ Public Class UIFormDBExplorer
                 Case Else
                     Me.PageData.Enabled = False
                     Me.PageData.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
-                    Me.PageObjectProperties.Enabled = False
-                    Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
+                    'Me.PageObjectProperties.Enabled = False
+                    'Me.PageObjectProperties.Item.Visibility = Telerik.WinControls.ElementVisibility.Hidden
                     ''' switch off
                     For Each aRadItem In Me.Menu.Items
                         Dim aTag As ormObjectOperationMethodAttribute = TryCast(aRadItem.Tag, ormObjectOperationMethodAttribute)
@@ -429,7 +439,7 @@ Public Class UIFormDBExplorer
                 End If
             Next
             If aDatagrid IsNot Nothing Then
-                For Each aDataobject As ormDataObject In aDatagrid.SelectedDataObjects
+                For Each aDataobject As ormBusinessObject In aDatagrid.SelectedDataObjects
                     Dim theParameterEntries As String() = anOperation.ParameterEntries
                     Dim theParameters As Object()
                     Dim returnValueIndex As Integer
@@ -451,7 +461,7 @@ Public Class UIFormDBExplorer
 
                     '    End If
                     'Next
-                    RadMessageBox.SetThemeName(Me.ThemeName)
+                    'RadMessageBox.SetThemeName(Me.ThemeName)
                     Dim ds As Windows.Forms.DialogResult = _
                         RadMessageBox.Show(Me, "Are you sure to run operation '" & anOperation.Title & "' - '" & anOperation.Description & "' on " & vbLf _
                                                 & anOperation.ClassDescription.ObjectAttribute.Title & " (" & Converter.Array2StringList(aDataobject.ObjectPrimaryKeyValues) & ")" _
@@ -471,9 +481,9 @@ Public Class UIFormDBExplorer
                             Return
                         Else
                             Me.StatusLabel.Text = "operation '" & anOperation.Title & "' failed to run"
-                            Call CoreMessageHandler(subname:="UIFormDBExplorer.UIFormDBExplorer_operationMenuOnclick", messagetype:=otCoreMessageType.InternalError, _
+                            Call CoreMessageHandler(procedure:="UIFormDBExplorer.UIFormDBExplorer_operationMenuOnclick", messagetype:=otCoreMessageType.InternalError, _
                                           message:="operation failed", _
-                                          arg1:=anOperation.OperationName, objectname:=aDataobject.ObjectID)
+                                          argument:=anOperation.OperationName, objectname:=aDataobject.ObjectID)
                             Me.Cursor = anoldCursor
                             Return
                         End If
@@ -556,8 +566,8 @@ Public Class UIFormDBExplorer
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
-    Public Sub uiformDBExplorer_CloseClicked(sender As Object, e As EventArgs) Handles RadCloseButton.Click
-        Me.Dispose()
+    Public Sub uiformDBExplorer_CloseClicked(sender As Object, e As EventArgs) Handles CloseButton.Click
+        Me.Close()
     End Sub
 
     ''' <summary>

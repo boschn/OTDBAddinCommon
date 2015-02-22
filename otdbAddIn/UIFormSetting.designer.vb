@@ -23,7 +23,7 @@ Partial Class UIFormSetting
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UIFormSetting))
-        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.Office2013LightTheme1 = New Telerik.WinControls.Themes.Office2013LightTheme()
         Me.RadPropertyGrid = New Telerik.WinControls.UI.RadPropertyGrid()
         Me.RadStatusStrip1 = New Telerik.WinControls.UI.RadStatusStrip()
         Me.StatusLabel = New Telerik.WinControls.UI.RadLabelElement()
@@ -33,6 +33,7 @@ Partial Class UIFormSetting
         Me.SaveConfigFileMenuButton = New Telerik.WinControls.UI.RadMenuItem()
         Me.CancelButton = New Telerik.WinControls.UI.RadButtonElement()
         Me.RadPanel1 = New Telerik.WinControls.UI.RadPanel()
+        Me.InitializeDataButton = New Telerik.WinControls.UI.RadButton()
         Me.DropDatabaseButton = New Telerik.WinControls.UI.RadButton()
         Me.ButtonCreateSchema = New Telerik.WinControls.UI.RadButton()
         Me.RadOffice2007ScreenTipElement1 = New Telerik.WinControls.UI.RadOffice2007ScreenTipElement()
@@ -40,6 +41,7 @@ Partial Class UIFormSetting
         CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadPanel1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.RadPanel1.SuspendLayout()
+        CType(Me.InitializeDataButton, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DropDatabaseButton, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -58,18 +60,16 @@ Partial Class UIFormSetting
         Me.RadPropertyGrid.SortOrder = System.Windows.Forms.SortOrder.Ascending
         Me.RadPropertyGrid.TabIndex = 0
         Me.RadPropertyGrid.Text = "RadPropertyGrid1"
-        Me.RadPropertyGrid.ThemeName = "TelerikMetroBlue"
         Me.RadPropertyGrid.ToolbarVisible = True
         '
         'RadStatusStrip1
         '
         Me.RadStatusStrip1.Items.AddRange(New Telerik.WinControls.RadItem() {Me.StatusLabel, Me.SaveButton, Me.CancelButton})
-        Me.RadStatusStrip1.Location = New System.Drawing.Point(0, 260)
+        Me.RadStatusStrip1.Location = New System.Drawing.Point(0, 266)
         Me.RadStatusStrip1.Name = "RadStatusStrip1"
-        Me.RadStatusStrip1.Size = New System.Drawing.Size(442, 32)
+        Me.RadStatusStrip1.Size = New System.Drawing.Size(442, 26)
         Me.RadStatusStrip1.TabIndex = 1
         Me.RadStatusStrip1.Text = "RadStatusStrip1"
-        Me.RadStatusStrip1.ThemeName = "TelerikMetroBlue"
         '
         'StatusLabel
         '
@@ -136,6 +136,7 @@ Partial Class UIFormSetting
         '
         'RadPanel1
         '
+        Me.RadPanel1.Controls.Add(Me.InitializeDataButton)
         Me.RadPanel1.Controls.Add(Me.DropDatabaseButton)
         Me.RadPanel1.Controls.Add(Me.ButtonCreateSchema)
         Me.RadPanel1.Dock = System.Windows.Forms.DockStyle.Top
@@ -144,14 +145,21 @@ Partial Class UIFormSetting
         Me.RadPanel1.Size = New System.Drawing.Size(442, 32)
         Me.RadPanel1.TabIndex = 2
         '
+        'InitializeDataButton
+        '
+        Me.InitializeDataButton.Location = New System.Drawing.Point(118, 5)
+        Me.InitializeDataButton.Name = "InitializeDataButton"
+        Me.InitializeDataButton.Size = New System.Drawing.Size(110, 24)
+        Me.InitializeDataButton.TabIndex = 2
+        Me.InitializeDataButton.Text = "Initialize Database"
+        '
         'DropDatabaseButton
         '
-        Me.DropDatabaseButton.Location = New System.Drawing.Point(118, 5)
+        Me.DropDatabaseButton.Location = New System.Drawing.Point(234, 5)
         Me.DropDatabaseButton.Name = "DropDatabaseButton"
         Me.DropDatabaseButton.Size = New System.Drawing.Size(110, 24)
         Me.DropDatabaseButton.TabIndex = 1
         Me.DropDatabaseButton.Text = "Drop Database"
-        Me.DropDatabaseButton.ThemeName = "TelerikMetroBlue"
         '
         'ButtonCreateSchema
         '
@@ -160,7 +168,6 @@ Partial Class UIFormSetting
         Me.ButtonCreateSchema.Size = New System.Drawing.Size(109, 24)
         Me.ButtonCreateSchema.TabIndex = 0
         Me.ButtonCreateSchema.Text = "Create Database"
-        Me.ButtonCreateSchema.ThemeName = "TelerikMetroBlue"
         '
         'RadOffice2007ScreenTipElement1
         '
@@ -189,11 +196,11 @@ Partial Class UIFormSetting
         '
         Me.RootElement.ApplyShapeToControl = True
         Me.Text = "OnTrack Property Setting"
-        Me.ThemeName = "TelerikMetroBlue"
         CType(Me.RadPropertyGrid, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.RadStatusStrip1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.RadPanel1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.RadPanel1.ResumeLayout(False)
+        CType(Me.InitializeDataButton, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.DropDatabaseButton, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.ButtonCreateSchema, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me, System.ComponentModel.ISupportInitialize).EndInit()
@@ -201,7 +208,7 @@ Partial Class UIFormSetting
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents Office2013LightTheme1 As Telerik.WinControls.Themes.Office2013LightTheme
     Friend WithEvents RadPropertyGrid As Telerik.WinControls.UI.RadPropertyGrid
     Friend WithEvents RadStatusStrip1 As Telerik.WinControls.UI.RadStatusStrip
     Friend WithEvents StatusLabel As Telerik.WinControls.UI.RadLabelElement
@@ -214,5 +221,6 @@ Partial Class UIFormSetting
     Friend WithEvents RadOffice2007ScreenTipElement1 As Telerik.WinControls.UI.RadOffice2007ScreenTipElement
     Friend WithEvents SaveConfigFileMenuButton As Telerik.WinControls.UI.RadMenuItem
     Friend WithEvents DropDatabaseButton As Telerik.WinControls.UI.RadButton
+    Friend WithEvents InitializeDataButton As Telerik.WinControls.UI.RadButton
 End Class
 

@@ -23,7 +23,7 @@ Partial Class UIFormWorkXConfig
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UIFormWorkXConfig))
-        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.Office2013LightTheme1 = New Telerik.WinControls.Themes.Office2013LightTheme()
         Me.StatusStrip = New Telerik.WinControls.UI.RadStatusStrip()
         Me.StatusLabel = New Telerik.WinControls.UI.RadLabelElement()
         Me.CancelButton = New Telerik.WinControls.UI.RadButtonElement()
@@ -103,7 +103,7 @@ Partial Class UIFormWorkXConfig
         Me.StatusStrip.Size = New System.Drawing.Size(907, 29)
         Me.StatusStrip.TabIndex = 0
         Me.StatusStrip.Text = "RadStatusStrip1"
-        Me.StatusStrip.ThemeName = "TelerikMetroBlue"
+        'Me.StatusStrip.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'StatusLabel
         '
@@ -141,12 +141,12 @@ Partial Class UIFormWorkXConfig
         Me.CommandPanel.Name = "CommandPanel"
         Me.CommandPanel.Size = New System.Drawing.Size(907, 46)
         Me.CommandPanel.TabIndex = 1
-        Me.CommandPanel.ThemeName = "TelerikMetroBlue"
+        'Me.CommandPanel.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'SpecialsButton
         '
         Me.SpecialsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.SpecialsButton.Image = Global.OnTrack.AddIn.My.Resources.Resources.Actions_system_run_icon32x32
+        Me.SpecialsButton.Image = Global.OnTrack.UI.My.Resources.Resources.mono_cog_16_16
         Me.SpecialsButton.Items.AddRange(New Telerik.WinControls.RadItem() {Me.CreateDoc9ConfigMenuItem, Me.CreateExpediterConfigMenuItem, Me.CreateDoc18Wpkpk, Me.CreateDoc18ERoadmap})
         Me.SpecialsButton.Location = New System.Drawing.Point(797, 0)
         Me.SpecialsButton.Name = "SpecialsButton"
@@ -154,7 +154,7 @@ Partial Class UIFormWorkXConfig
         Me.SpecialsButton.TabIndex = 1
         Me.SpecialsButton.Text = "Specials"
         Me.SpecialsButton.TextAlignment = System.Drawing.ContentAlignment.MiddleRight
-        Me.SpecialsButton.ThemeName = "TelerikMetroBlue"
+        'Me.SpecialsButton.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'CreateDoc9ConfigMenuItem
         '
@@ -195,14 +195,14 @@ Partial Class UIFormWorkXConfig
         'AddButton
         '
         Me.AddButton.DisplayStyle = Telerik.WinControls.DisplayStyle.Image
-        Me.AddButton.Image = Global.OnTrack.AddIn.My.Resources.Resources.bt_add
+        Me.AddButton.Image = Global.OnTrack.UI.My.Resources.Resources.plus
         Me.AddButton.ImageAlignment = System.Drawing.ContentAlignment.MiddleCenter
         Me.AddButton.Location = New System.Drawing.Point(3, 3)
         Me.AddButton.Name = "AddButton"
         Me.AddButton.Size = New System.Drawing.Size(42, 37)
         Me.AddButton.TabIndex = 0
         Me.AddButton.Text = "RadButton1"
-        Me.AddButton.ThemeName = "TelerikMetroBlue"
+        'Me.AddButton.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadSplitContainer1
         '
@@ -214,12 +214,13 @@ Partial Class UIFormWorkXConfig
         '
         '
         '
-        Me.RadSplitContainer1.RootElement.MinSize = New System.Drawing.Size(25, 25)
+        Me.RadSplitContainer1.RootElement.MinSize = New System.Drawing.Size(0, 0)
         Me.RadSplitContainer1.Size = New System.Drawing.Size(907, 407)
+        Me.RadSplitContainer1.SplitterWidth = 5
         Me.RadSplitContainer1.TabIndex = 2
         Me.RadSplitContainer1.TabStop = False
         Me.RadSplitContainer1.Text = "RadSplitContainer1"
-        Me.RadSplitContainer1.ThemeName = "TelerikMetroBlue"
+        'Me.RadSplitContainer1.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'SplitPanel1
         '
@@ -229,14 +230,14 @@ Partial Class UIFormWorkXConfig
         '
         '
         '
-        Me.SplitPanel1.RootElement.MinSize = New System.Drawing.Size(25, 25)
+        Me.SplitPanel1.RootElement.MinSize = New System.Drawing.Size(0, 0)
         Me.SplitPanel1.Size = New System.Drawing.Size(163, 407)
         Me.SplitPanel1.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(-0.3198198!, 0.0!)
         Me.SplitPanel1.SizeInfo.SplitterCorrection = New System.Drawing.Size(-234, 0)
         Me.SplitPanel1.TabIndex = 0
         Me.SplitPanel1.TabStop = False
         Me.SplitPanel1.Text = "SplitPanel1"
-        Me.SplitPanel1.ThemeName = "TelerikMetroBlue"
+        'Me.SplitPanel1.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'ListXConfigsGV
         '
@@ -251,25 +252,25 @@ Partial Class UIFormWorkXConfig
         Me.ListXConfigsGV.ReadOnly = True
         Me.ListXConfigsGV.Size = New System.Drawing.Size(163, 407)
         Me.ListXConfigsGV.TabIndex = 1
-        Me.ListXConfigsGV.ThemeName = "TelerikMetroBlue"
+        'Me.ListXConfigsGV.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'SplitPanel2
         '
         Me.SplitPanel2.Controls.Add(Me.RadPanel1)
         Me.SplitPanel2.Controls.Add(Me.DataIDSplitContainer)
-        Me.SplitPanel2.Location = New System.Drawing.Point(166, 0)
+        Me.SplitPanel2.Location = New System.Drawing.Point(168, 0)
         Me.SplitPanel2.Name = "SplitPanel2"
         '
         '
         '
-        Me.SplitPanel2.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.SplitPanel2.Size = New System.Drawing.Size(741, 407)
+        Me.SplitPanel2.RootElement.MinSize = New System.Drawing.Size(0, 0)
+        Me.SplitPanel2.Size = New System.Drawing.Size(739, 407)
         Me.SplitPanel2.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(0.3198198!, 0.0!)
         Me.SplitPanel2.SizeInfo.SplitterCorrection = New System.Drawing.Size(234, 0)
         Me.SplitPanel2.TabIndex = 1
         Me.SplitPanel2.TabStop = False
         Me.SplitPanel2.Text = "SplitPanel2"
-        Me.SplitPanel2.ThemeName = "TelerikMetroBlue"
+        'Me.SplitPanel2.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadPanel1
         '
@@ -282,7 +283,7 @@ Partial Class UIFormWorkXConfig
         Me.RadPanel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.RadPanel1.Location = New System.Drawing.Point(0, 0)
         Me.RadPanel1.Name = "RadPanel1"
-        Me.RadPanel1.Size = New System.Drawing.Size(741, 82)
+        Me.RadPanel1.Size = New System.Drawing.Size(739, 82)
         Me.RadPanel1.TabIndex = 8
         '
         'OutlineCombo
@@ -316,7 +317,7 @@ Partial Class UIFormWorkXConfig
         Me.OutlineCombo.Size = New System.Drawing.Size(192, 20)
         Me.OutlineCombo.TabIndex = 9
         Me.OutlineCombo.TabStop = False
-        Me.OutlineCombo.ThemeName = "TelerikMetroBlue"
+        'Me.OutlineCombo.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadLabel5
         '
@@ -326,7 +327,7 @@ Partial Class UIFormWorkXConfig
         Me.RadLabel5.Size = New System.Drawing.Size(50, 21)
         Me.RadLabel5.TabIndex = 6
         Me.RadLabel5.Text = "Outline"
-        Me.RadLabel5.ThemeName = "ControlDefault"
+        'Me.RadLabel5.ThemeName = "ControlDefault"
         '
         'RadLabel1
         '
@@ -336,26 +337,26 @@ Partial Class UIFormWorkXConfig
         Me.RadLabel1.Size = New System.Drawing.Size(86, 21)
         Me.RadLabel1.TabIndex = 8
         Me.RadLabel1.Text = "ConfigName"
-        Me.RadLabel1.ThemeName = "ControlDefault"
+        'Me.RadLabel1.ThemeName = "ControlDefault"
         '
         'ConfigNameTb
         '
         Me.ConfigNameTb.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.ConfigNameTb.Location = New System.Drawing.Point(104, 14)
         Me.ConfigNameTb.Name = "ConfigNameTb"
-        Me.ConfigNameTb.Size = New System.Drawing.Size(188, 22)
+        Me.ConfigNameTb.Size = New System.Drawing.Size(188, 21)
         Me.ConfigNameTb.TabIndex = 7
         Me.ConfigNameTb.TabStop = False
-        Me.ConfigNameTb.ThemeName = "TelerikMetroBlue"
+        'Me.ConfigNameTb.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'DescriptionTB
         '
         Me.DescriptionTB.Location = New System.Drawing.Point(104, 42)
         Me.DescriptionTB.Name = "DescriptionTB"
-        Me.DescriptionTB.Size = New System.Drawing.Size(336, 22)
+        Me.DescriptionTB.Size = New System.Drawing.Size(336, 21)
         Me.DescriptionTB.TabIndex = 6
         Me.DescriptionTB.TabStop = False
-        Me.DescriptionTB.ThemeName = "TelerikMetroBlue"
+        ' Me.DescriptionTB.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadLabel2
         '
@@ -365,7 +366,7 @@ Partial Class UIFormWorkXConfig
         Me.RadLabel2.Size = New System.Drawing.Size(74, 21)
         Me.RadLabel2.TabIndex = 5
         Me.RadLabel2.Text = "Description"
-        Me.RadLabel2.ThemeName = "ControlDefault"
+        'Me.RadLabel2.ThemeName = "ControlDefault"
         '
         'DataIDSplitContainer
         '
@@ -379,12 +380,13 @@ Partial Class UIFormWorkXConfig
         '
         '
         '
-        Me.DataIDSplitContainer.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.DataIDSplitContainer.Size = New System.Drawing.Size(741, 322)
+        Me.DataIDSplitContainer.RootElement.MinSize = New System.Drawing.Size(0, 0)
+        Me.DataIDSplitContainer.Size = New System.Drawing.Size(739, 322)
+        Me.DataIDSplitContainer.SplitterWidth = 5
         Me.DataIDSplitContainer.TabIndex = 6
         Me.DataIDSplitContainer.TabStop = False
         Me.DataIDSplitContainer.Text = "RadSplitContainer3"
-        Me.DataIDSplitContainer.ThemeName = "TelerikMetroBlue"
+        ' Me.DataIDSplitContainer.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'SplitPanel3
         '
@@ -395,14 +397,14 @@ Partial Class UIFormWorkXConfig
         '
         '
         '
-        Me.SplitPanel3.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.SplitPanel3.Size = New System.Drawing.Size(176, 322)
+        Me.SplitPanel3.RootElement.MinSize = New System.Drawing.Size(0, 0)
+        Me.SplitPanel3.Size = New System.Drawing.Size(175, 322)
         Me.SplitPanel3.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(-0.2613636!, 0.0!)
         Me.SplitPanel3.SizeInfo.SplitterCorrection = New System.Drawing.Size(-207, 0)
         Me.SplitPanel3.TabIndex = 0
         Me.SplitPanel3.TabStop = False
         Me.SplitPanel3.Text = "SplitPanel3"
-        Me.SplitPanel3.ThemeName = "TelerikMetroBlue"
+        'Me.SplitPanel3.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'XConfigObjectsGView
         '
@@ -417,10 +419,10 @@ Partial Class UIFormWorkXConfig
         Me.XConfigObjectsGView.MasterTemplate.EnableGrouping = False
         Me.XConfigObjectsGView.Name = "XConfigObjectsGView"
         Me.XConfigObjectsGView.ReadOnly = True
-        Me.XConfigObjectsGView.Size = New System.Drawing.Size(173, 292)
+        Me.XConfigObjectsGView.Size = New System.Drawing.Size(172, 292)
         Me.XConfigObjectsGView.TabIndex = 3
         Me.XConfigObjectsGView.Text = "RadGridView1"
-        Me.XConfigObjectsGView.ThemeName = "TelerikMetroBlue"
+        'Me.XConfigObjectsGView.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadLabel3
         '
@@ -430,36 +432,36 @@ Partial Class UIFormWorkXConfig
         Me.RadLabel3.Size = New System.Drawing.Size(74, 18)
         Me.RadLabel3.TabIndex = 2
         Me.RadLabel3.Text = "Data Objects"
-        Me.RadLabel3.ThemeName = "ControlDefault"
+        'Me.RadLabel3.ThemeName = "ControlDefault"
         '
         'SplitPanel4
         '
         Me.SplitPanel4.Controls.Add(Me.DynamicIDButton)
         Me.SplitPanel4.Controls.Add(Me.XConfigIDsGView)
         Me.SplitPanel4.Controls.Add(Me.RadLabel4)
-        Me.SplitPanel4.Location = New System.Drawing.Point(179, 0)
+        Me.SplitPanel4.Location = New System.Drawing.Point(180, 0)
         Me.SplitPanel4.Name = "SplitPanel4"
         '
         '
         '
-        Me.SplitPanel4.RootElement.MinSize = New System.Drawing.Size(25, 25)
-        Me.SplitPanel4.Size = New System.Drawing.Size(562, 322)
+        Me.SplitPanel4.RootElement.MinSize = New System.Drawing.Size(0, 0)
+        Me.SplitPanel4.Size = New System.Drawing.Size(559, 322)
         Me.SplitPanel4.SizeInfo.AutoSizeScale = New System.Drawing.SizeF(0.2613636!, 0.0!)
         Me.SplitPanel4.SizeInfo.SplitterCorrection = New System.Drawing.Size(207, 0)
         Me.SplitPanel4.TabIndex = 1
         Me.SplitPanel4.TabStop = False
         Me.SplitPanel4.Text = "SplitPanel4"
-        Me.SplitPanel4.ThemeName = "TelerikMetroBlue"
+        'Me.SplitPanel4.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'DynamicIDButton
         '
         Me.DynamicIDButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.DynamicIDButton.Location = New System.Drawing.Point(472, 6)
+        Me.DynamicIDButton.Location = New System.Drawing.Point(469, 6)
         Me.DynamicIDButton.Name = "DynamicIDButton"
         Me.DynamicIDButton.Size = New System.Drawing.Size(87, 23)
         Me.DynamicIDButton.TabIndex = 5
         Me.DynamicIDButton.Text = "are Dynamic"
-        Me.DynamicIDButton.ThemeName = "TelerikMetroBlue"
+        'Me.DynamicIDButton.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'XConfigIDsGView
         '
@@ -475,10 +477,10 @@ Partial Class UIFormWorkXConfig
         Me.XConfigIDsGView.MasterTemplate.EnableGrouping = False
         Me.XConfigIDsGView.Name = "XConfigIDsGView"
         Me.XConfigIDsGView.ReadOnly = True
-        Me.XConfigIDsGView.Size = New System.Drawing.Size(562, 292)
+        Me.XConfigIDsGView.Size = New System.Drawing.Size(559, 292)
         Me.XConfigIDsGView.TabIndex = 4
         Me.XConfigIDsGView.Text = "RadGridView1"
-        Me.XConfigIDsGView.ThemeName = "TelerikMetroBlue"
+        'Me.XConfigIDsGView.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'RadLabel4
         '
@@ -488,7 +490,7 @@ Partial Class UIFormWorkXConfig
         Me.RadLabel4.Size = New System.Drawing.Size(61, 18)
         Me.RadLabel4.TabIndex = 3
         Me.RadLabel4.Text = "Identifiers"
-        Me.RadLabel4.ThemeName = "ControlDefault"
+        'Me.RadLabel4.ThemeName = "ControlDefault"
         '
         'RadSplitContainer2
         '
@@ -499,10 +501,11 @@ Partial Class UIFormWorkXConfig
         '
         Me.RadSplitContainer2.RootElement.MinSize = New System.Drawing.Size(25, 25)
         Me.RadSplitContainer2.Size = New System.Drawing.Size(453, 53)
+        Me.RadSplitContainer2.SplitterWidth = 5
         Me.RadSplitContainer2.TabIndex = 6
         Me.RadSplitContainer2.TabStop = False
         Me.RadSplitContainer2.Text = "RadSplitContainer2"
-        Me.RadSplitContainer2.ThemeName = "TelerikMetroBlue"
+        'Me.RadSplitContainer2.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'UIFormWorkXConfig
         '
@@ -520,7 +523,7 @@ Partial Class UIFormWorkXConfig
         '
         Me.RootElement.ApplyShapeToControl = True
         Me.Text = "Work with XChange Configurations"
-        Me.ThemeName = "TelerikMetroBlue"
+        'Me.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.CommandPanel, System.ComponentModel.ISupportInitialize).EndInit()
         Me.CommandPanel.ResumeLayout(False)
@@ -566,7 +569,7 @@ Partial Class UIFormWorkXConfig
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents Office2013LightTheme1 As Telerik.WinControls.Themes.Office2013LightTheme
     Friend WithEvents StatusStrip As Telerik.WinControls.UI.RadStatusStrip
     Friend WithEvents StatusLabel As Telerik.WinControls.UI.RadLabelElement
     Friend WithEvents CancelButton As Telerik.WinControls.UI.RadButtonElement

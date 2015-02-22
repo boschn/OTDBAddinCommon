@@ -21,6 +21,8 @@ Imports OnTrack.AddIn.My
 Imports OnTrack.Deliverables
 Imports OnTrack.Parts
 Imports OnTrack.Database
+Imports OnTrack.Tracking
+Imports OnTrack.UI.My
 
 Public Module Doc9QuickNDirty
 
@@ -54,11 +56,11 @@ Public Module Doc9QuickNDirty
             End If
 
             '* add objects
-            aXChangeConfig.AddObjectByName(Deliverables.Deliverable.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Scheduling.ScheduleEdition.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Deliverables.Target.constTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Deliverables.Track.ConstTableID, xcmd:=XCMD)
-            aXChangeConfig.AddObjectByName(Parts.Part.ConstTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Deliverables.Deliverable.ConstPrimaryTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Scheduling.ScheduleEdition.ConstPrimaryTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Deliverables.Target.ConstPrimaryTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Deliverables.Track.ConstPrimaryTableID, xcmd:=XCMD)
+            aXChangeConfig.AddObjectByName(Parts.Part.ConstPrimaryTableID, xcmd:=XCMD)
 
             '* Add Attribute Mapping
             aXChangeConfig.AllowDynamicEntries = True
@@ -77,39 +79,39 @@ Public Module Doc9QuickNDirty
             '*** create the sql query
             '***
             Dim aCommand As Database.ormSqlSelectCommand = _
-                ot.GetTableStore(Deliverable.ConstTableID). _
+                ot.GetTableStore(Deliverable.ConstPrimaryTableID). _
                 CreateSqlSelectCommand(id:=My.MySettings.Default.DefaultDoc18MSPConfigNameDynamic, addAllFields:=False)
 
 
-            If Not aCommand.Prepared Then
-                aCommand.select = Deliverable.ConstTableID & ".[" & Deliverable.constFNUid & "] ," & _
-                                  Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] ," & _
-                                  Parts.Part.ConstTableID & ".[" & Part.constFNRespOU & "] ," & _
-                                   Parts.Part.ConstTableID & ".[" & Part.ConstFNWorkpackage & "] "
-                aCommand.AddTable(tableid:=Part.ConstTableID, addAllFields:=False)
-                aCommand.AddTable(tableid:=TrackItem.constTableID, addAllFields:=False)
-                '" inner join " & clsOTDBTrackItem.constTableID & " on " & _
+            If Not aCommand.IsPrepared Then
+                aCommand.select = Deliverable.ConstPrimaryTableID & ".[" & Deliverable.ConstFNDLVUID & "] ," & _
+                                  Deliverable.ConstPrimaryTableID & ".[" & Deliverable.constFNMatchCode & "] ," & _
+                                  Parts.Part.ConstPrimaryTableID & ".[" & Part.constFNRespOU & "] ," & _
+                                   Parts.Part.ConstPrimaryTableID & ".[" & Part.ConstFNWorkpackage & "] "
+                aCommand.AddTable(tableid:=Part.ConstPrimaryTableID, addAllFields:=False)
+                aCommand.AddTable(tableid:=TrackListItem.ConstPrimaryTableID, addAllFields:=False)
+                '" inner join " & clsOTDBTrackItem.ConstPrimaryTableID & " on " & _
                 aCommand.Where = _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNMatchCode & "] = " & TrackItem.constTableID & ".[" & TrackItem.constFNMatchCode & "]" & _
+                    Deliverable.ConstPrimaryTableID & ".[" & Deliverable.constFNMatchCode & "] = " & TrackListItem.ConstPrimaryTableID & ".[" & TrackListItem.constFNMatchCode & "]" & _
                      " AND " & _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNPartID & "] = " & Part.ConstTableID & ".[" & Part.ConstFNPartID & "]"
+                    Deliverable.ConstPrimaryTableID & ".[" & Deliverable.constFNPartID & "] = " & Part.ConstPrimaryTableID & ".[" & Part.ConstFNPartID & "]"
 
-                aCommand.Where &= " AND " & Deliverable.ConstTableID & ".[" & Deliverable.ConstFNIsDeleted & "]=@IsDeleted and lcase(" & _
-                    Deliverable.ConstTableID & ".[" & Deliverable.constFNDeliverableTypeID & "]) <> 'struktur' and " _
-                    & Deliverable.ConstTableID & ".[" & Deliverable.constFNfuid & "] = 0"  ' no revision
+                aCommand.Where &= " AND " & Deliverable.ConstPrimaryTableID & ".[" & Deliverable.ConstFNIsDeleted & "]=@IsDeleted and lcase(" & _
+                    Deliverable.ConstPrimaryTableID & ".[" & Deliverable.ConstFNDeliverableTypeID & "]) <> 'struktur' and " _
+                    & Deliverable.ConstPrimaryTableID & ".[" & Deliverable.ConstFNFDLVUID & "] = 0"  ' no revision
 
                 aCommand.AddParameter(New Database.ormSqlCommandParameter(ID:="@IsDeleted", _
                                                                                 columnname:=Deliverable.ConstFNIsDeleted, _
-                                                                                tablename:=Deliverable.ConstTableID))
+                                                                                tableid:=Deliverable.ConstPrimaryTableID))
 
-                aCommand.OrderBy = "[" & TrackItem.constTableID & "." & TrackItem.constFNOrdinal & "] asc ," & _
-                                   "[" & Part.ConstTableID & "." & Part.constFNRespOU & "] asc, " & _
-                                   "[" & Part.ConstTableID & "." & Part.ConstFNWorkpackage & "] asc " & _
-                                   ""
+                aCommand.OrderBy = "[" & TrackListItem.ConstPrimaryTableID & "." & TrackListItem.constFNOrdinal & "] asc ," & _
+                                   "[" & Part.ConstPrimaryTableID & "." & Part.constFNRespOU & "] asc, " & _
+                                   "[" & Part.ConstPrimaryTableID & "." & Part.ConstFNWorkpackage & "] asc " & _
+                                   String.Empty
                 aCommand.Prepare()
             End If
 
-            If aCommand.Prepared Then
+            If aCommand.IsPrepared Then
                 aCommand.SetParameterValue(ID:="@IsDeleted", value:=False)
 
             End If
@@ -118,10 +120,10 @@ Public Module Doc9QuickNDirty
             '**
             Dim aRecordCollection As List(Of Database.ormRecord) = aCommand.RunSelect
             Dim anordinal As Long = 10
-            Dim precode As String = ""
-            Dim site As String = ""
-            Dim dept As String = ""
-            Dim wkpk As String = ""
+            Dim precode As String = String.Empty
+            Dim site As String = String.Empty
+            Dim dept As String = String.Empty
+            Dim wkpk As String = String.Empty
             Dim level As UShort = 0
 
             For Each aRecord In aRecordCollection
@@ -129,7 +131,7 @@ Public Module Doc9QuickNDirty
                 If IsNumeric(aRecord.GetValue(1)) Then
 
                     '** Group on Precode
-                    If precode = "" OrElse precode <> aRecord.GetValue(2) Then
+                    If precode = String.Empty OrElse precode <> aRecord.GetValue(2) Then
                         precode = aRecord.GetValue(2)
                         level = 0
                         Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
@@ -137,15 +139,15 @@ Public Module Doc9QuickNDirty
                             anOIGroup.IsGroup = True
                             anOIGroup.IsText = True
                             anOIGroup.Text = precode
-                            dept = ""
-                            wkpk = ""
+                            dept = String.Empty
+                            wkpk = String.Empty
                             anOIGroup.Level = level
                             anOutline.AddItem(anOIGroup)
                         End If
                         anordinal += 10
                     End If
                     '** Group on Dept
-                    If dept = "" OrElse dept <> aRecord.GetValue(3) Then
+                    If dept = String.Empty OrElse dept <> aRecord.GetValue(3) Then
                         dept = aRecord.GetValue(3)
                         level = 1
                         Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
@@ -153,14 +155,14 @@ Public Module Doc9QuickNDirty
                             anOIGroup.IsGroup = True
                             anOIGroup.IsText = True
                             anOIGroup.Text = precode & " ( " & dept & " )"
-                            wkpk = ""
+                            wkpk = String.Empty
                             anOIGroup.Level = level
                             anOutline.AddItem(anOIGroup)
                         End If
                         anordinal += 10
                     End If
                     '** Group on Workpackage
-                    If wkpk = "" OrElse wkpk <> aRecord.GetValue(4) Then
+                    If wkpk = String.Empty OrElse wkpk <> aRecord.GetValue(4) Then
                         wkpk = aRecord.GetValue(4)
                         level = 2
                         Dim anOIGroup As XOutlineItem = XOutlineItem.Create(ID:=anOutline.ID, ordinal:=anordinal)
@@ -193,7 +195,7 @@ Public Module Doc9QuickNDirty
             End If
 
         Catch ex As Exception
-            CoreMessageHandler(exception:=ex, subname:="Doc9QuickNDirty.CreateDoc18XConfig")
+            CoreMessageHandler(exception:=ex, procedure:="Doc9QuickNDirty.CreateDoc18XConfig")
             Return Nothing
         End Try
 

@@ -24,7 +24,7 @@ Partial Class UIFormMessageLog
     Private Sub InitializeComponent()
         Dim SortDescriptor1 As Telerik.WinControls.Data.SortDescriptor = New Telerik.WinControls.Data.SortDescriptor()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UIFormMessageLog))
-        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.Office2013LightTheme1 = New Telerik.WinControls.Themes.Office2013LightTheme()
         Me.StatusStrip = New Telerik.WinControls.UI.RadStatusStrip()
         Me.StatusLabel = New Telerik.WinControls.UI.RadLabelElement()
         Me.CloseButton = New Telerik.WinControls.UI.RadButtonElement()
@@ -43,11 +43,11 @@ Partial Class UIFormMessageLog
         'StatusStrip
         '
         Me.StatusStrip.Items.AddRange(New Telerik.WinControls.RadItem() {Me.StatusLabel, Me.CloseButton})
-        Me.StatusStrip.Location = New System.Drawing.Point(0, 138)
+        Me.StatusStrip.Location = New System.Drawing.Point(0, 199)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(634, 32)
+        Me.StatusStrip.Size = New System.Drawing.Size(915, 32)
         Me.StatusStrip.TabIndex = 0
-        Me.StatusStrip.ThemeName = "TelerikMetroBlue"
+        'Me.StatusStrip.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'StatusLabel
         '
@@ -73,7 +73,7 @@ Partial Class UIFormMessageLog
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.MenuStrip1.Size = New System.Drawing.Size(634, 24)
+        Me.MenuStrip1.Size = New System.Drawing.Size(915, 24)
         Me.MenuStrip1.TabIndex = 1
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -115,10 +115,10 @@ Partial Class UIFormMessageLog
         Me.GridView.MasterTemplate.SortDescriptors.AddRange(New Telerik.WinControls.Data.SortDescriptor() {SortDescriptor1})
         Me.GridView.Name = "GridView"
         Me.GridView.ReadOnly = True
-        Me.GridView.Size = New System.Drawing.Size(634, 114)
+        Me.GridView.Size = New System.Drawing.Size(915, 175)
         Me.GridView.TabIndex = 2
         Me.GridView.Text = "RadGridView1"
-        Me.GridView.ThemeName = "TelerikMetroBlue"
+        'Me.GridView.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'UIFormMessageLog
         '
@@ -126,7 +126,7 @@ Partial Class UIFormMessageLog
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.CloseButton
-        Me.ClientSize = New System.Drawing.Size(634, 170)
+        Me.ClientSize = New System.Drawing.Size(915, 231)
         Me.Controls.Add(Me.GridView)
         Me.Controls.Add(Me.StatusStrip)
         Me.Controls.Add(Me.MenuStrip1)
@@ -140,7 +140,7 @@ Partial Class UIFormMessageLog
         '
         Me.RootElement.ApplyShapeToControl = True
         Me.Text = "Show Message Log"
-        Me.ThemeName = "TelerikMetroBlue"
+        'Me.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).EndInit()
         Me.MenuStrip1.ResumeLayout(False)
         Me.MenuStrip1.PerformLayout()
@@ -151,7 +151,7 @@ Partial Class UIFormMessageLog
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents Office2013LightTheme1 As Telerik.WinControls.Themes.Office2013LightTheme
     Friend WithEvents StatusStrip As Telerik.WinControls.UI.RadStatusStrip
     Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
     Friend WithEvents ClearToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem

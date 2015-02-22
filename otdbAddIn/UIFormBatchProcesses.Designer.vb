@@ -23,7 +23,7 @@ Partial Class UIFormBatchProcesses
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(UIFormBatchProcesses))
-        Me.TelerikMetroBlueTheme1 = New Telerik.WinControls.Themes.TelerikMetroBlueTheme()
+        Me.Office2013LightTheme1 = New Telerik.WinControls.Themes.Office2013LightTheme()
         Me.StatusStrip = New Telerik.WinControls.UI.RadStatusStrip()
         Me.StatusLabel = New Telerik.WinControls.UI.RadLabelElement()
         Me.CancelButton = New Telerik.WinControls.UI.RadButtonElement()
@@ -37,6 +37,7 @@ Partial Class UIFormBatchProcesses
         Me.CheckDepend = New Telerik.WinControls.UI.RadTileElement()
         Me.RadTileElement1 = New Telerik.WinControls.UI.RadTileElement()
         Me.RadTileElement2 = New Telerik.WinControls.UI.RadTileElement()
+        Me.Office2013LightTheme1 = New Telerik.WinControls.Themes.Office2013LightTheme()
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.RadPanorama1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -45,11 +46,11 @@ Partial Class UIFormBatchProcesses
         'StatusStrip
         '
         Me.StatusStrip.Items.AddRange(New Telerik.WinControls.RadItem() {Me.StatusLabel, Me.CancelButton, Me.StatusProgress})
-        Me.StatusStrip.Location = New System.Drawing.Point(0, 176)
+        Me.StatusStrip.Location = New System.Drawing.Point(0, 172)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(464, 27)
+        Me.StatusStrip.Size = New System.Drawing.Size(464, 29)
         Me.StatusStrip.TabIndex = 0
-        Me.StatusStrip.ThemeName = "TelerikMetroBlue"
+        'Me.StatusStrip.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'StatusLabel
         '
@@ -96,10 +97,10 @@ Partial Class UIFormBatchProcesses
         Me.RadPanorama1.Name = "RadPanorama1"
         Me.RadPanorama1.RowsCount = 2
         Me.RadPanorama1.ShowGroups = True
-        Me.RadPanorama1.Size = New System.Drawing.Size(464, 176)
+        Me.RadPanorama1.Size = New System.Drawing.Size(464, 172)
         Me.RadPanorama1.TabIndex = 2
         Me.RadPanorama1.Text = "RadPanorama1"
-        Me.RadPanorama1.ThemeName = "TelerikMetroBlue"
+        'Me.RadPanorama1.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         '
         'TileGroupElement1
         '
@@ -188,7 +189,7 @@ Partial Class UIFormBatchProcesses
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(464, 203)
+        Me.ClientSize = New System.Drawing.Size(464, 201)
         Me.Controls.Add(Me.RadPanorama1)
         Me.Controls.Add(Me.StatusStrip)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -198,7 +199,7 @@ Partial Class UIFormBatchProcesses
         '
         Me.RootElement.ApplyShapeToControl = True
         Me.Text = "Process in Batch"
-        Me.ThemeName = "TelerikMetroBlue"
+        'Me.ThemeName =  ot.GetConfigProperty(name:=Global.OnTrack.UI.ConstCPNUITheme)
         CType(Me.StatusStrip, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.RadPanorama1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me, System.ComponentModel.ISupportInitialize).EndInit()
@@ -206,7 +207,7 @@ Partial Class UIFormBatchProcesses
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents TelerikMetroBlueTheme1 As Telerik.WinControls.Themes.TelerikMetroBlueTheme
+    Friend WithEvents Office2013LightTheme1 As Telerik.WinControls.Themes.Office2013LightTheme
     Friend WithEvents StatusStrip As Telerik.WinControls.UI.RadStatusStrip
     Friend WithEvents StatusLabel As Telerik.WinControls.UI.RadLabelElement
     Friend WithEvents CancelButton As Telerik.WinControls.UI.RadButtonElement
@@ -220,5 +221,6 @@ Partial Class UIFormBatchProcesses
     Friend WithEvents BuildCluster As Telerik.WinControls.UI.RadTileElement
     Friend WithEvents CheckDepend As Telerik.WinControls.UI.RadTileElement
     Friend WithEvents RadTileElement2 As Telerik.WinControls.UI.RadTileElement
+
 End Class
 

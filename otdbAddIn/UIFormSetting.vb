@@ -44,7 +44,7 @@ Public Class UIFormSetting
                 If aValue IsNot Nothing Then
                     Return String.Format("[{0}]:{1}", aValue.Database, aValue.DBPath)
                 Else
-                    Return ""
+                    Return String.empty
                 End If
             Else
                 Return MyBase.ConvertTo(context, culture, value, destinationType)
@@ -90,18 +90,20 @@ Public Class UIFormSetting
     <TypeConverter(GetType(ConfigSetModelConverter))> Public Class ConfigSetModel
 
 
-        Private _configsetName As String = ""
+        Private _configsetName As String = String.empty
         Private _type As Database.otDBServerType = 0
-        Private _name As String = ""
-        Private _path As String = ""
-        Private _dbuser As String = ""
-        Private _dbpassword As String = ""
+        Private _name As String = String.empty
+        Private _path As String = String.empty
+        Private _dbuser As String = String.empty
+        Private _dbpassword As String = String.empty
         Private _sequence As ComplexPropertyStore.Sequence = ComplexPropertyStore.Sequence.primary
-        Private _description As String = ""
+        Private _description As String = String.empty
         Private _driver As Database.otDbDriverType = 0
-        Private _ConnectionString As String = ""
+        Private _ConnectionString As String = String.empty
         Private _logagent As Boolean = False
         Private _usemars As Boolean = True
+        Private _SetupID As String = String.Empty
+        Private _setupDescription As String = String.Empty
 
         ''' <summary>
         ''' Gets or sets the usemars.
@@ -174,7 +176,7 @@ Public Class UIFormSetting
      <Description("name of the configuration set")> _
         Public Property ConfigSetname As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _configsetName = value
             End Set
             Get
@@ -182,11 +184,11 @@ Public Class UIFormSetting
             End Get
         End Property
         <DisplayName("Config Set Description")> _
- <Category("Database")> <Browsable(True)> _
- <Description("description of the configuration set")> _
+         <Category("Database")> <Browsable(True)> _
+         <Description("description of the configuration set")> _
         Public Property ConfigSetNDescription As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _description = value
             End Set
             Get
@@ -224,7 +226,7 @@ Public Class UIFormSetting
         <Description("name of the database in connection string")> _
         Public Property Database As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _name = value
             End Set
             Get
@@ -238,7 +240,7 @@ Public Class UIFormSetting
        <Description("name of the database path or host address in connection string")> _
         Public Property DBPath As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _path = value
             End Set
             Get
@@ -247,10 +249,10 @@ Public Class UIFormSetting
         End Property
         <DisplayName("Db User")> _
         <Category("Database")> <Browsable(True)> _
-               <Description("name of the database user in connection string")> _
+        <Description("name of the database user in connection string")> _
         Public Property DbUser As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _dbuser = value
             End Set
             Get
@@ -264,7 +266,7 @@ Public Class UIFormSetting
         <Description("password of the database user in connection string")> _
         Public Property DbUserPassword As String
             Set(value As String)
-                If value Is Nothing Then value = ""
+                If value Is Nothing Then value = String.empty
                 _dbpassword = value
             End Set
             Get
@@ -272,17 +274,45 @@ Public Class UIFormSetting
             End Get
         End Property
 
+        <DisplayName("Setup")> _
+        <Category("Database")> <Browsable(True)> _
+        <Description("Description of the database setup")> _
+        Public Property SetupDescription As String
+            Set(value As String)
+                If value Is Nothing Then value = String.Empty
+                _setupDescription = value
+            End Set
+            Get
+                Return _setupDescription
+            End Get
+        End Property
+
+        <DisplayName("Setup ID")> _
+        <Category("Database")> <Browsable(True)> _
+        <Description("ID of the setup to be used as object prefix in the database")> _
+        Public Property SetupID As String
+            Set(value As String)
+                If value Is Nothing Then value = String.Empty
+                _SetupID = value
+            End Set
+            Get
+                Return _SetupID
+            End Get
+        End Property
         Public Overrides Function toString() As String
             Return String.Format("{0}:({1}/{2},{3},{4},{5},{6},{7})", _configsetName, _type.ToString, _name, _path, _dbuser, _configsetName, _sequence.ToString, _usemars.ToString)
         End Function
     End Class
-
+    ''' <summary>
+    ''' Instance
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Sub New()
 
         ' This call is required by the designer.
         InitializeComponent()
 
-
+        AddHandler Me.FormClosing, AddressOf UIFormSetting_FormClosing
     End Sub
     ''' <summary>
     ''' Register the SetHostPropertyFunction
@@ -330,7 +360,7 @@ Public Class UIFormSetting
                 ot.Initialize(force:=True)
                 Me.UpdatePropertyStore(_propertyStore)
                 CoreMessageHandler(message:="configuration file in " & path & configfilename & " found and added to OnTrack Configuration", _
-                                   subname:="UIFormSetting.PropertyStore.ItemValueChanged", messagetype:=otCoreMessageType.ApplicationInfo)
+                                   procedure:="UIFormSetting.PropertyStore.ItemValueChanged", messagetype:=otCoreMessageType.ApplicationInfo)
                 Me.StatusLabel.Text = "configuration file found and added to OnTrack Configuration"
                 Me.Refresh()
             Else
@@ -366,26 +396,29 @@ Public Class UIFormSetting
 
         Debug.Print(DirectCast(sender, RadBrowseEditorElement).Value)
 
-        Dim configfilename As String = ""
-        Dim configfilelocation As String = ""
-        Dim newValue As String = DirectCast(sender, RadBrowseEditorElement).Value.ToString
-        Dim configfile As PropertyStoreItem = _propertyStore.Item(constConfigFileName)
-        If configfile IsNot Nothing Then
-            configfilename = configfile.Value.ToString
-        End If
-        Dim configlocation As PropertyStoreItem = _propertyStore.Item(constConfigFileLocation)
-        If configlocation IsNot Nothing Then
-            configfilelocation = configlocation.Value.ToString
-        End If
+        Dim configfilename As String = String.empty
+        Dim configfilelocation As String = String.Empty
+        If Not String.IsNullOrWhiteSpace(DirectCast(sender, RadBrowseEditorElement).Value) Then
 
-        If IO.Path.GetFileName(newValue) <> "" Then
-            _propertyStore.Item(constConfigFileName).Value = IO.Path.GetFileName(newValue)
-        End If
-        If IO.Path.GetDirectoryName(newValue) <> "" Then
-            _propertyStore.Item(constConfigFileLocation).Value = IO.Path.GetDirectoryName(newValue)
-        End If
+            Dim newValue As String = DirectCast(sender, RadBrowseEditorElement).Value.ToString
+            Dim configfile As PropertyStoreItem = _propertyStore.Item(constConfigFileName)
+            If configfile IsNot Nothing Then
+                configfilename = configfile.Value.ToString
+            End If
+            Dim configlocation As PropertyStoreItem = _propertyStore.Item(constConfigFileLocation)
+            If configlocation IsNot Nothing Then
+                configfilelocation = configlocation.Value.ToString
+            End If
 
-        Me.Refresh()
+            If IO.Path.GetFileName(newValue) <> String.Empty Then
+                _propertyStore.Item(constConfigFileName).Value = IO.Path.GetFileName(newValue)
+            End If
+            If IO.Path.GetDirectoryName(newValue) <> String.Empty Then
+                _propertyStore.Item(constConfigFileLocation).Value = IO.Path.GetDirectoryName(newValue)
+            End If
+
+            Me.Refresh()
+        End If
     End Sub
     Private Sub radPropertyGrid_EditorInitalized(ByVal sender As Object, ByVal e As PropertyGridItemEditorInitializedEventArgs) Handles RadPropertyGrid.EditorInitialized
 
@@ -420,7 +453,7 @@ Public Class UIFormSetting
     ''' <remarks></remarks>
     Private Function UpdatePropertyStore(Optional store As RadPropertyStore = Nothing) As RadPropertyStore
         Dim myStore As RadPropertyStore = New RadPropertyStore()
-        Dim aPropertyName As String = ""
+        Dim aPropertyName As String = String.empty
         If store IsNot Nothing Then
             myStore = store
         End If
@@ -521,6 +554,8 @@ Public Class UIFormSetting
                         .DatabaseDriver = GetConfigProperty(ConstCPNDriverName, configsetname:=aConfigSetName, sequence:=aSequence)
                         .Logagent = GetConfigProperty(constCPNUseLogAgent, configsetname:=aConfigSetName, sequence:=aSequence)
                         .Usemars = GetConfigProperty(ConstCPNDBSQLServerUseMars, configsetname:=aConfigSetName, sequence:=aSequence)
+                        .SetupDescription = GetConfigProperty(ConstCPNSetupDescription, configsetname:=aConfigSetName, sequence:=aSequence)
+                        .SetupID = GetConfigProperty(ConstCPNSetupID, configsetname:=aConfigSetName, sequence:=aSequence)
                     End With
 
                     aPropertyName = "&" & i & ConstDelimiter & "ConfigurationSet" & ConstDelimiter & aSequence.ToString
@@ -533,7 +568,7 @@ Public Class UIFormSetting
                     If configset Is Nothing Then
                         configset = New PropertyStoreItem(GetType(UIFormSetting.ConfigSetModel), aPropertyName, aConfigSetModel)
                         '** add only if there is a sequence
-                        If aConfigSetModel.DatabaseType <> 0 And aConfigSetModel.Database <> "" Then
+                        If aConfigSetModel.DatabaseType <> 0 And aConfigSetModel.Database <> String.empty Then
                             configset.Label = "DB Configuration #" & i & ":" & aSequence.ToString
                             myStore.Add(configset)
                         End If
@@ -556,31 +591,28 @@ Public Class UIFormSetting
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
-    Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click, Me.FormClosing
+    Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click
+        Me.Close()
+    End Sub
+    ''' <summary>
+    ''' FormClosing Event Handler
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="formClosingArgs"></param>
+    ''' <remarks></remarks>
+    Private Sub UIFormSetting_FormClosing(sender As Object, formClosingArgs As System.Windows.Forms.FormClosingEventArgs)
         Dim ds As Windows.Forms.DialogResult
         If isChanged Then
-            RadMessageBox.SetThemeName(Me.ThemeName)
+            'RadMessageBox.SetThemeName(Me.ThemeName)
             ds = RadMessageBox.Show(Me, "Are you sure?", "Cancel", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
         Else
             ds = Windows.Forms.DialogResult.Yes
         End If
-        Dim formClosingArgs As System.Windows.Forms.FormClosingEventArgs = _
-               TryCast(e, System.Windows.Forms.FormClosingEventArgs)
-
-        If formClosingArgs Is Nothing Then
-            If ds = Windows.Forms.DialogResult.Yes Then
-                Me.Hide()
-            End If
-        Else
-            If ds = Windows.Forms.DialogResult.Yes Then
-                formClosingArgs.Cancel = True
-                Me.Hide()
-            End If
+        formClosingArgs.Cancel = True
+        If ds = Windows.Forms.DialogResult.Yes Then
+            Me.Hide()
         End If
-
-
     End Sub
-
     ''' <summary>
     ''' Create Schema Handler
     ''' </summary>
@@ -595,7 +627,7 @@ Public Class UIFormSetting
             Global.OnTrack.Database.Installation.CreateDatabase(ot.InstalledModules)
         Else
             ot.CoreMessageHandler(message:="couldn't acquire the necessary rights to continue this operation", _
-                                         messagetype:=otCoreMessageType.ApplicationError, subname:="UIFormSetting.CreateSchemaButton")
+                                         messagetype:=otCoreMessageType.ApplicationError, procedure:="UIFormSetting.CreateSchemaButton")
 
         End If
     End Sub
@@ -624,7 +656,7 @@ Public Class UIFormSetting
                 ot.CurrentConfigSetName = configsetname.Value.ToString
                 SetHostPropertyDelegate(name:=ConstCPNUseConfigSetName, value:=configsetname.Value, host:=Nothing, silent:=False)
                 ot.CoreMessageHandler(message:="Current database configuration changed to " & CStr(configsetname.Value), _
-                                      messagetype:=otCoreMessageType.ApplicationInfo, subname:="UIFormSetting.SaveInDocument")
+                                      messagetype:=otCoreMessageType.ApplicationInfo, procedure:="UIFormSetting.SaveInDocument")
             End If
 
             Dim description As PropertyStoreItem = _propertyStore.Item(constConfigDescription)
@@ -656,12 +688,12 @@ Public Class UIFormSetting
                         AndAlso aConfigSetModel.ConfigSetname = configsetname.Value.ToString _
                         And aConfigSetModel.Sequence = ComplexPropertyStore.Sequence.Primary Then
                             With aConfigSetModel
-                                If .Database <> "" Then
+                                If .Database <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBName, value:=.Database, host:=Nothing, silent:=False)
                                     SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
-                                If .DBPath <> "" Then
+                                If .DBPath <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBPath, value:=.DBPath, host:=Nothing, silent:=False)
                                     SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
@@ -671,17 +703,17 @@ Public Class UIFormSetting
                                     SetConfigProperty(ConstCPNDBType, weight:=50, value:=.DatabaseType, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
-                                If .DbUser <> "" Then
+                                If .DbUser <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBUser, value:=.DbUser, host:=Nothing, silent:=False)
                                     SetConfigProperty(ConstCPNDBUser, weight:=50, value:=.DbUser, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
-                                If .DbUserPassword <> "" Then
+                                If .DbUserPassword <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBPassword, value:=.DbUserPassword, host:=Nothing, silent:=False)
                                     SetConfigProperty(ConstCPNDBPassword, weight:=50, value:=.DbUserPassword, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
-                                If .ConfigSetNDescription <> "" Then
+                                If .ConfigSetNDescription <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDescription, value:=.ConfigSetNDescription, host:=Nothing, silent:=False)
                                     SetConfigProperty(name:=ConstCPNDescription, weight:=50, value:=.ConfigSetNDescription, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
@@ -691,11 +723,20 @@ Public Class UIFormSetting
                                     SetConfigProperty(name:=ConstCPNDriverName, weight:=50, value:=.DatabaseDriver, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
-                                If .ConnectionString <> "" Then
+                                If .ConnectionString <> String.empty Then
                                     SetHostPropertyDelegate(name:=ConstCPNDBConnection, value:=.ConnectionString, host:=Nothing, silent:=False)
                                     SetConfigProperty(name:=ConstCPNDBConnection, weight:=50, value:=.ConnectionString, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
                                 End If
 
+                                If .SetupID <> String.empty Then
+                                    SetHostPropertyDelegate(name:=ConstCPNSetupID, value:=.SetupID, host:=Nothing, silent:=False)
+                                    SetConfigProperty(name:=ConstCPNSetupID, weight:=50, value:=.SetupID, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
+                                End If
+
+                                If .SetupDescription <> String.empty Then
+                                    SetHostPropertyDelegate(name:=ConstCPNSetupDescription, value:=.SetupDescription, host:=Nothing, silent:=False)
+                                    SetConfigProperty(name:=ConstCPNSetupDescription, weight:=50, value:=.SetupDescription, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
+                                End If
                                 SetHostPropertyDelegate(name:=constCPNUseLogAgent, value:=.Logagent, host:=Nothing, silent:=False)
                                 SetConfigProperty(name:=constCPNUseLogAgent, weight:=50, value:=.Logagent, configsetname:=configsetname.Value.ToString, sequence:=ComplexPropertyStore.Sequence.Primary)
 
@@ -707,12 +748,12 @@ Public Class UIFormSetting
 
 
             ot.CoreMessageHandler(message:="OnTrack configuration properties saved in document properties", messagetype:=otCoreMessageType.ApplicationInfo, _
-                                   subname:="UIFormSetting.saveInDocument")
+                                   procedure:="UIFormSetting.saveInDocument")
             isChanged = False
             Me.Refresh()
             Me.Hide()
         Catch ex As Exception
-            ot.CoreMessageHandler(exception:=ex, subname:="UIFormSetting.SaveInDocument", showmsgbox:=True)
+            ot.CoreMessageHandler(exception:=ex, procedure:="UIFormSetting.SaveInDocument", showmsgbox:=True)
         End Try
 
     End Sub
@@ -727,7 +768,7 @@ Public Class UIFormSetting
             If ot.CurrentSession.IsRunning Then
                 ot.CoreMessageHandler(showmsgbox:=True, message:="Current database configuration cannot be changed." & vbLf & _
                                       "since a session is running. Please disconnect from session and try again", _
-                                       messagetype:=otCoreMessageType.ApplicationError, subname:="UIFormSetting.SaveInSession")
+                                       messagetype:=otCoreMessageType.ApplicationError, procedure:="UIFormSetting.SaveInSession")
                 Return
             End If
 
@@ -737,7 +778,7 @@ Public Class UIFormSetting
             If configsetname IsNot Nothing AndAlso configsetname.Value IsNot Nothing AndAlso LCase(CStr(configsetname.Value)) <> LCase(ot.CurrentConfigSetName) Then
                 ot.CurrentConfigSetName = configsetname.Value
                 ot.CoreMessageHandler(message:="Current database configuration changed to " & CStr(configsetname.Value), _
-                                      messagetype:=otCoreMessageType.ApplicationInfo, subname:="UIFormSetting.SaveInSession")
+                                      messagetype:=otCoreMessageType.ApplicationInfo, procedure:="UIFormSetting.SaveInSession")
             End If
 
             Dim description As PropertyStoreItem = _propertyStore.Item(constConfigDescription)
@@ -761,14 +802,16 @@ Public Class UIFormSetting
                             AndAlso aConfigSetModel.ConfigSetname = configsetname.Value.ToString Then
                             aSequence = aConfigSetModel.Sequence
                             With aConfigSetModel
-                                If .Database <> "" Then SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
-                                If .DBPath <> "" Then SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .SetupID <> String.empty Then SetConfigProperty(ConstCPNSetupID, weight:=50, value:=.SetupID, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .SetupDescription <> String.empty Then SetConfigProperty(ConstCPNSetupDescription, weight:=50, value:=.SetupDescription, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .Database <> String.empty Then SetConfigProperty(ConstCPNDBName, weight:=50, value:=.Database, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .DBPath <> String.empty Then SetConfigProperty(ConstCPNDBPath, weight:=50, value:=.DBPath, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                                 If .DatabaseType <> 0 Then SetConfigProperty(ConstCPNDBType, weight:=50, value:=.DatabaseType, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
-                                If .DbUser <> "" Then SetConfigProperty(ConstCPNDBUser, weight:=50, value:=.DbUser, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
-                                If .DbUserPassword <> "" Then SetConfigProperty(ConstCPNDBPassword, weight:=50, value:=.DbUserPassword, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
-                                If .ConfigSetNDescription <> "" Then SetConfigProperty(name:=ConstCPNDescription, weight:=50, value:=.ConfigSetNDescription, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .DbUser <> String.empty Then SetConfigProperty(ConstCPNDBUser, weight:=50, value:=.DbUser, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .DbUserPassword <> String.empty Then SetConfigProperty(ConstCPNDBPassword, weight:=50, value:=.DbUserPassword, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .ConfigSetNDescription <> String.empty Then SetConfigProperty(name:=ConstCPNDescription, weight:=50, value:=.ConfigSetNDescription, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                                 If .DatabaseDriver <> 0 Then SetConfigProperty(name:=ConstCPNDriverName, weight:=50, value:=.DatabaseDriver, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
-                                If .ConnectionString <> "" Then SetConfigProperty(name:=ConstCPNDBConnection, weight:=50, value:=.ConnectionString, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
+                                If .ConnectionString <> String.empty Then SetConfigProperty(name:=ConstCPNDBConnection, weight:=50, value:=.ConnectionString, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                                 SetConfigProperty(name:=constCPNUseLogAgent, weight:=50, value:=.Logagent, configsetname:=configsetname.Value.ToString, sequence:=aSequence)
                             End With
                         End If
@@ -779,12 +822,12 @@ Public Class UIFormSetting
 
 
             ot.CoreMessageHandler(message:="OnTrack configuration properties saved in session", messagetype:=otCoreMessageType.ApplicationInfo, _
-                                   subname:="UIFormSetting.SaveInSession")
+                                   procedure:="UIFormSetting.SaveInSession")
             isChanged = False
             Me.Refresh()
             Me.Close()
         Catch ex As Exception
-            ot.CoreMessageHandler(exception:=ex, subname:="UIFormSetting.SaveInSession", showmsgbox:=True)
+            ot.CoreMessageHandler(exception:=ex, procedure:="UIFormSetting.SaveInSession", showmsgbox:=True)
         End Try
     End Sub
     ''' <summary>
@@ -819,7 +862,7 @@ Public Class UIFormSetting
                         File.Copy(configfilelocation_prop.Value & configfilename_prop.Value, configfilefullname)
                         If Not File.Exists(configfilefullname) Then
                             ot.CoreMessageHandler(message:="Unable to save copy '" & configfilefullname & "' of config file '" & configfilename_prop.Value & "' !" & vbLf & _
-                                         "Sure you have rights for the path ?!", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, subname:="UIFormSetting.SaveInSession")
+                                         "Sure you have rights for the path ?!", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, procedure:="UIFormSetting.SaveInSession")
                             Return
                         End If
 
@@ -828,7 +871,7 @@ Public Class UIFormSetting
                     configfilefullname = configfilelocation_prop.Value & configfilename_prop.Value
                 Else
                     ot.CoreMessageHandler(message:="Path '" & configfilelocation_prop.Value & "' to save config file '" & configfilename_prop.Value & "' doesnot exists !" & vbLf & _
-                                          "Please provide a valid file path", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, subname:="UIFormSetting.SaveInSession")
+                                          "Please provide a valid file path", messagetype:=otCoreMessageType.ApplicationError, showmsgbox:=True, procedure:="UIFormSetting.SaveInSession")
                     Return
                 End If
 
@@ -884,6 +927,8 @@ Public Class UIFormSetting
                                 If Not String.IsNullOrWhiteSpace(.Database) Then aWriter.WriteLine(ConstCPNDBName & "=" & .Database)
                                 If .DatabaseType <> 0 Then aWriter.WriteLine(ConstCPNDBType & "=" & .DatabaseType.ToString)
                                 If Not String.IsNullOrWhiteSpace(.DbUser) Then aWriter.WriteLine(ConstCPNDBUser & "=" & .DbUser)
+                                If Not String.IsNullOrWhiteSpace(.SetupDescription) Then aWriter.WriteLine(ConstCPNSetupDescription & "=" & .SetupDescription)
+                                If Not String.IsNullOrWhiteSpace(.SetupID) Then aWriter.WriteLine(ConstCPNSetupID & "=" & .SetupID)
                                 If Not String.IsNullOrWhiteSpace(.DbUserPassword) Then aWriter.WriteLine(ConstCPNDBPassword & "=" & .DbUserPassword)
                                 If Not String.IsNullOrWhiteSpace(.ConfigSetNDescription) Then aWriter.WriteLine(ConstCPNDescription & "=" & .ConfigSetNDescription)
                                 If .DatabaseDriver <> 0 Then aWriter.WriteLine(ConstCPNDriverName & "=" & .DatabaseDriver.ToString)
@@ -905,12 +950,12 @@ Public Class UIFormSetting
 
             ot.CoreMessageHandler(message:="OnTrack configuration properties saved in config file " & configfilefullname & vbLf _
                                   & "Restart Office or Add-In to use them", showmsgbox:=True, messagetype:=otCoreMessageType.ApplicationInfo, _
-                                   subname:="UIFormSetting.SaveConfigFile")
+                                   procedure:="UIFormSetting.SaveConfigFile")
             isChanged = False
             Me.Refresh()
             Me.Close()
         Catch ex As Exception
-            ot.CoreMessageHandler(exception:=ex, subname:="UIFormSetting.SaveConfigFile", showmsgbox:=True)
+            ot.CoreMessageHandler(exception:=ex, procedure:="UIFormSetting.SaveConfigFile", showmsgbox:=True)
         End Try
     End Sub
     ''' <summary>
@@ -930,12 +975,65 @@ Public Class UIFormSetting
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
-    Private Sub CreateData_Click(sender As Object, e As EventArgs) Handles DropDatabaseButton.Click
-        If ot.CurrentSession.RequestUserAccess(accessRequest:=otAccessRight.AlterSchema, messagetext:="for dropping the database provide an administration id") Then
+    Private Sub DropDatabaseButton_Click(sender As Object, e As EventArgs) Handles DropDatabaseButton.Click
+            If Installation.DropDatabase() Then
+                Me.StatusLabel.Text = "database dropped"
+            End If
+    End Sub
 
-        End If
-        If Installation.InitializeTestData() Then
-            Me.StatusLabel.Text = "test data initialized"
+    ''' <summary>
+    ''' Initialize the Database Data
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub InitializeDataButton_Click(sender As Object, e As EventArgs) Handles InitializeDataButton.Click
+        If ot.CurrentSession.RequireAccessRight (accessrequest:=otAccessRight.AlterSchema ) Then
+            Dim aBrowserDialog = New System.Windows.Forms.FolderBrowserDialog()
+            aBrowserDialog.Description = "Select the directory which contains initial data (folder will be searched recursively for .csv files)"
+            ' Do not allow the user to create New files via the FolderBrowserDialog.
+            aBrowserDialog.ShowNewFolderButton = False
+
+            ' Default lookup path
+            Dim uri As System.Uri = New System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)
+            Dim valueInitialPath As String = ConstInitialDataFolder & "\" & CurrentSession.CurrentSetupID
+            Dim searchpath As String = String.Empty
+            If IO.Directory.Exists(valueInitialPath) Then
+                searchpath = valueInitialPath
+            ElseIf IO.Directory.Exists(System.IO.Path.GetDirectoryName(uri.LocalPath) & "\Resources\" & valueInitialPath) Then
+                searchpath = System.IO.Path.GetDirectoryName(uri.LocalPath) & "\Resources\" & valueInitialPath
+            ElseIf IO.Directory.Exists(System.IO.Path.GetDirectoryName(uri.LocalPath) & "\Resources\" & ConstInitialDataFolder) Then
+                searchpath = System.IO.Path.GetDirectoryName(uri.LocalPath) & "\Resources\" & ConstInitialDataFolder
+            Else
+
+                searchpath = System.IO.Path.GetDirectoryName(uri.LocalPath) & "\Resources"
+            End If
+
+
+
+            ''' try to feed from My.Application path, then from Executing Assembly Path 
+            ''' 
+
+            ''' 
+            aBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop
+            If Not String.IsNullOrWhiteSpace(searchpath) Then
+                aBrowserDialog.SelectedPath = searchpath
+            End If
+
+            Dim result = aBrowserDialog.ShowDialog()
+
+            If result = Windows.Forms.DialogResult.OK OrElse result = Windows.Forms.DialogResult.Yes Then
+                Dim path As String = aBrowserDialog.SelectedPath
+                If Installation.InitializeData(setupid:=CurrentSetupID, searchpath:=path) Then
+                    ' feed initial data
+                    Me.StatusLabel.Text = "database data initialized"
+                Else
+                    Me.StatusLabel.Text = "database data initialization failed - see message log"
+                End If
+            Else
+                Me.StatusLabel.Text = "initialize database data aborted"
+            End If
+
         End If
     End Sub
 End Class

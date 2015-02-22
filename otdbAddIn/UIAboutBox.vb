@@ -136,7 +136,7 @@ Public Class AboutData
                 Dim attributes As Object() = System.Reflection.Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyProductAttribute), False)
                 ' If there aren't any Product attributes, return an empty string
                 If attributes.Length = 0 Then
-                    Return ""
+                    Return String.empty
                 End If
                 ' If there is a Product attribute, return its value
                 Return (CType(attributes(0), AssemblyProductAttribute)).Product
@@ -159,7 +159,7 @@ Public Class AboutData
                 Dim attributes As Object() = System.Reflection.Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyCompanyAttribute), False)
                 ' If there aren't any Company attributes, return an empty string
                 If attributes.Length = 0 Then
-                    Return ""
+                    Return String.empty
                 End If
                 ' If there is a Company attribute, return its value
                 Return (CType(attributes(0), AssemblyCompanyAttribute)).Company
@@ -182,7 +182,7 @@ Public Class AboutData
                 Dim attributes As Object() = System.Reflection.Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyCopyrightAttribute), False)
                 ' If there aren't any Copyright attributes, return an empty string
                 If attributes.Length = 0 Then
-                    Return ""
+                    Return String.empty
                 End If
                 ' If there is a Copyright attribute, return its value
                 Return (CType(attributes(0), AssemblyCopyrightAttribute)).Copyright
@@ -205,7 +205,7 @@ Public Class AboutData
                 Dim attributes As Object() = System.Reflection.Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyDescriptionAttribute), False)
                 ' If there aren't any Description attributes, return an empty string
                 If attributes.Length = 0 Then
-                    Return ""
+                    Return String.empty
                 End If
                 ' If there is a Description attribute, return its value
                 Return (CType(attributes(0), AssemblyDescriptionAttribute)).Description
@@ -224,7 +224,7 @@ Public Class AboutData
     Public Shared Property Version() As String
         Get
             If String.IsNullOrWhiteSpace(_Version) Then
-                Return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                _Version = otUICommon.ConstAssemblyName & " version " & otUICommon.AssemblyVersion.ToString & " on otBackend " & ot.AssemblyVersion.ToString
             End If
             Return _Version
         End Get
@@ -247,7 +247,7 @@ Public Class AboutData
                     ' Select the first one
                     Dim titleAttribute As AssemblyTitleAttribute = CType(attributes(0), AssemblyTitleAttribute)
                     ' If it is not an empty string, return it
-                    If titleAttribute.Title <> "" Then
+                    If titleAttribute.Title <> String.empty Then
                         Return titleAttribute.Title
                     End If
                 End If

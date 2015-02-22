@@ -292,7 +292,7 @@ Public Class UIFormLogin
 
             End If
 
-            If Me.myshadow.Messagetext = "" Then
+            If Me.myshadow.Messagetext = String.empty Then
                 Me.Message = "<html><strong>Welcome !</strong><br />Please enter your Username and Password to obtain access to the OnTrack Database.</html>"
             Else
                 Me.Message = Me.myshadow.Messagetext

@@ -112,23 +112,30 @@ Public Class UIFormWorkXConfig
         Me.Refresh()
     End Sub
 
-    Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click, Me.FormClosing
-        RadMessageBox.SetThemeName(Me.ThemeName)
+    Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click
+        Me.Close()
+    End Sub
+    ''' <summary>
+    ''' Form Closing Event
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="FormClosingArgs"></param>
+    ''' <remarks></remarks>
+    Private Sub UIFormWorkXConfig_FormClosing(sender As Object, formClosingArgs As System.Windows.Forms.FormClosingEventArgs)
         Dim ds As Windows.Forms.DialogResult = _
             RadMessageBox.Show(Me, "Are you sure?", "Cancel", Windows.Forms.MessageBoxButtons.YesNo, RadMessageIcon.Question)
 
-        If ds = Windows.Forms.DialogResult.Yes Then
-            'Me.Disposing(sender, e)
-            Me.Dispose()
-        Else
-            Dim FormClosingArgs As System.Windows.Forms.FormClosingEventArgs = TryCast(e, System.Windows.Forms.FormClosingEventArgs)
-            If Not FormClosingArgs Is Nothing Then
-                FormClosingArgs.Cancel = True
-            End If
-            Exit Sub
+        If ds <> Windows.Forms.DialogResult.Yes Then
+            FormClosingArgs.Cancel = True
         End If
-    End Sub
 
+    End Sub
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub XConfig1MenuItem_Click(sender As Object, e As EventArgs) Handles CreateDoc9ConfigMenuItem.Click
 
 
@@ -137,7 +144,7 @@ Public Class UIFormWorkXConfig
     Private Sub CreateExpediterMenuItem_Click(sender As Object, e As EventArgs) Handles CreateExpediterConfigMenuItem.Click
 
         'Create the special IDs
-        'If Global.OnTrack.AddIn.createExpediterXConfig(otXChangeCommandType.Read) Then
+        'If createExpediterXConfig(otXChangeCommandType.Read) Then
         '    Me.StatusLabel.Text = MySettings.Default.DefaultExpediterConfigNameDynamic & " successfully created"
         'End If
     End Sub
@@ -161,5 +168,18 @@ Public Class UIFormWorkXConfig
 
     Private Sub OutlineCombo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles OutlineCombo.SelectedIndexChanged
 
+    End Sub
+
+    ''' <summary>
+    ''' New Instance
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub New()
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        AddHandler Me.FormClosing, AddressOf UIFormWorkXConfig_FormClosing
     End Sub
 End Class

@@ -97,11 +97,11 @@ Public Class UIFormBatchProcesses
             Case Batchprog.updategaps
                 e.Result = Deliverables.Track.UpdateAllTracks(workerthread:=_batchworker)
             Case Batchprog.buildcluster
-                e.Result = Scheduling.Dependency.BuildDynamicDependencyCluster(workerthread:=_batchworker)
+                'e.Result = Scheduling.Dependency.BuildDynamicDependencyCluster(workerthread:=_batchworker)
             Case Batchprog.buildnet
-                e.Result = Scheduling.Dependency.BuildDependencyNet(workerthread:=_batchworker)
+                'e.Result = Scheduling.Dependency.BuildDependencyNet(workerthread:=_batchworker)
             Case Batchprog.checkDepend
-                e.Result = Scheduling.Dependency.CheckAllDependencies(workerthread:=_batchworker)
+                'e.Result = Scheduling.Dependency.CheckAllDependencies(workerthread:=_batchworker)
         End Select
 
 
@@ -175,7 +175,7 @@ Public Class UIFormBatchProcesses
         If Not e.UserState Is Nothing Then
             text = CType(e.UserState, String)
         Else
-            text = ""
+            text = String.empty
         End If
 
         Call SetProgress(perc, text)
